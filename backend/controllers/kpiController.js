@@ -3,6 +3,7 @@ const TherapyArea = require('../models/TherapyArea'); // Adjust the path as nece
 const DistributionModel = require('../models/DistributionModel'); // Adjust the path as necessary
 const Region = require('../models/Region'); // Adjust the path as necessary
 const SubjectArea = require('../models/SubjectArea')
+const User = require('../models/user')
 
 
 const getKPIs = async (req, res) => {
@@ -91,9 +92,60 @@ const getSubjectAreas = async (req, res) => {
     }
 };
 
+const addCustomKPI = async (req, res) => {
+    const { therapy_area, region, distribution_model, subject_area, kpi_name, kpi_description } = req.body;
+
+    if (!kpi_name || !kpi_description) {
+        return res.status(400).json({ message: 'Both KPI name and description are required.' });
+    }
+
+    try {
+        const userId = req.user.userId;
+        console.log("user id : ",userId)
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        let customKPIEntry = user.customKPIs.find(kpi =>
+            kpi.therapy_area === therapy_area &&
+            kpi.region === region &&
+            kpi.distribution_model === distribution_model &&
+            kpi.subject_area === subject_area
+        );
+
+        if (customKPIEntry) {
+            customKPIEntry.KPIs.push({
+                name: kpi_name,
+                description: kpi_description
+            });
+        } else {
+            customKPIEntry = {
+                therapy_area,
+                region,
+                distribution_model,
+                subject_area,
+                KPIs: [{
+                    name: kpi_name,
+                    description: kpi_description
+                }]
+            };
+            user.customKPIs.push(customKPIEntry);
+        }
+
+        await user.save();
+
+        res.status(201).json({ message: 'Custom KPI added successfully', customKPI: customKPIEntry });
+    } catch (error) {
+        console.error('Error adding custom KPI:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 module.exports = { getKPIs,
     createKPI,
     getTherapyAreas,
     getDistributionModels,
     getRegions,
-    getSubjectAreas };
+    getSubjectAreas,
+    addCustomKPI };

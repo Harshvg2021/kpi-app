@@ -12,6 +12,21 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    customKPIs: {
+        type: [{
+            therapy_area: String,
+            region: String,
+            distribution_model: String,
+            subject_area: String,
+            KPIs: [
+                {
+                    name: String,
+                    description: String
+                }
+            ]
+        }],
+        default: []
     }
 }, { timestamps: true });
 
