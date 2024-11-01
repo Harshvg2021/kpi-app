@@ -11,6 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { useGetTherapyArea } from "@/hooks/fetch/useFetchKPI";
 
 // Define schema using Zod for form validation
 const schema = z.object({
@@ -49,6 +50,10 @@ const Page: React.FC = () => {
     console.log("Selected Therapy Area:", data.therapyArea);
   };
 
+  const therapy = useGetTherapyArea();
+
+  console.log(therapy.data);
+
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
       <div className="bg-white shadow-lg space-y-4 rounded-3xl p-8 max-w-md w-full ">
@@ -69,7 +74,7 @@ const Page: React.FC = () => {
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Select onValueChange={(value) => setValue("therapyArea", value)}>
             <SelectTrigger className="w-full border border-gray-300 rounded-md py-2 px-4">
               <SelectValue placeholder="Select" />

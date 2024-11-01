@@ -45,6 +45,7 @@ const AxiosClient = {
   getAccessToken: async function () {
     try {
       const iniToken = Cookies.get("kpiUserToken") as string | null;
+      if (iniToken) this.accessToken = iniToken;
       return iniToken;
     } catch (error) {
       console.log(error);
