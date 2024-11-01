@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PencilIcon } from "lucide-react";
+import CreateKpi from "./components/CreateKpi";
+import { useRouter } from "next/navigation";
 
 interface KPI {
   id: string;
@@ -18,6 +20,7 @@ interface KPI {
 }
 
 const KPIList = () => {
+  const router = useRouter();
   const kpis: KPI[] = [
     {
       id: "1",
@@ -74,12 +77,12 @@ const KPIList = () => {
       <div className="bg-white p-8 my-8 rounded-lg shadow-md max-w-4xl flex flex-col gap-4 mx-auto max-h-[90vh]">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">KPI List - Patient</h1>
-          <Button className="bg-blue-500 hover:bg-blue-600">Add New KPI</Button>
+          <CreateKpi />
         </div>
 
-        <div className="rounded-lg border bg-white shadow ">
-          <Table className="relative  max-h-[70vh] flex flex-col">
-            <TableHeader className="sticky top-0 bg-white rounded-t-md  z-10">
+        <div className="rounded-lg border max-h-[70vh] overflow-y-auto bg-white shadow ">
+          <Table className="  ">
+            <TableHeader className="  bg-white rounded-t-md  z-10">
               <TableRow>
                 <TableHead className=""></TableHead>
                 <TableHead className="">KPI</TableHead>
@@ -107,7 +110,12 @@ const KPIList = () => {
         </div>
 
         <div className="flex justify-center">
-          <Button className="bg-blue-900 hover:bg-blue-800 w-full max-w-md">
+          <Button
+            onClick={() => {
+              router.push("/kpi/summary");
+            }}
+            className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
+          >
             Submit
           </Button>
         </div>
