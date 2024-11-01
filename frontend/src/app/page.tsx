@@ -14,6 +14,10 @@ import {
 } from "@/components/ui/form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { useSession } from "@/hooks/useSession";
+import { Spinner } from "@/components/custom/Spinner";
+import { useEffect } from "react";
 
 // Define Zod schema for validation
 const loginSchema = z.object({
@@ -24,20 +28,35 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
-  const router = useRouter();
   // Initialize react-hook-form with Zod validation
   const form = useForm<LoginFormInputs>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "test@gmail.com",
+      password: "abc123",
     },
   });
+
+  const { status } = useSession();
+
+  const auth = useAuth();
+  const router = useRouter();
 
   const onSubmit = (data: LoginFormInputs) => {
     console.log("Form Submitted", data);
     // Handle form submission (e.g., call an API for login)
   };
+
+  useEffect(() => {
+    if (status == "authenticated") router.replace("/kpi/therapy");
+  }, [status, router]);
+
+  if (status === "loading" || status === "authenticated")
+    return (
+      <div className=" h-[94vh] grid place-content-center">
+        <Spinner />
+      </div>
+    );
 
   return (
     <div
@@ -92,8 +111,9 @@ export default function LoginForm() {
               </Link>
             </div>
             <Button
-              // type="submit"
-              onClick={() => router.push("/kpi/therapy")}
+              loading={auth.loginMutation.isPending}
+              type="submit"
+              onClick={() => auth.loginMutation.mutate(form.getValues())}
               className="w-full py-2 bg-[#003465] hover:bg-[#003465]  text-white font-semibold rounded-md"
             >
               Sign in
