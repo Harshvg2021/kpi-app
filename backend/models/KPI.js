@@ -17,10 +17,18 @@ const kpiSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    KPI_list: {
-        type: [String],  
-        required: true
-    }
+    KPI_list: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            description: {
+                type: String,
+                required: true
+            }
+        }
+    ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('KPI', kpiSchema);
