@@ -1,18 +1,20 @@
 const KPI = require('../models/KPI');
-const TherapyArea = require('../models/TherapyArea'); // Adjust the path as necessary
-const DistributionModel = require('../models/DistributionModel'); // Adjust the path as necessary
-const Region = require('../models/Region'); // Adjust the path as necessary
+const TherapyArea = require('../models/TherapyArea'); 
+const DistributionModel = require('../models/DistributionModel'); 
+const Region = require('../models/Region'); 
 const SubjectArea = require('../models/SubjectArea')
 const User = require('../models/user')
 
 
 const getKPIs = async (req, res) => {
-    
     const { therapy_area, region, distribution_model, subject_area } = req.body;
+    const userId = req.user.userId; 
 
     console.log("Request received:", req.body); 
+
     try {
-        console.log("inside KPi route")
+        console.log("inside KPI route");
+
         const kpis = await KPI.find({
             therapy_area,
             region,
@@ -20,16 +22,36 @@ const getKPIs = async (req, res) => {
             subject_area
         });
 
-        if (kpis.length === 0) {
+        const user = await User.findById(userId).select('customKPIs');
+        let customKPI = [];
+
+        if (user) {
+
+            customKPI = user.customKPIs.filter(customKPI => 
+                customKPI.therapy_area === therapy_area &&
+                customKPI.region === region &&
+                customKPI.distribution_model === distribution_model &&
+                customKPI.subject_area === subject_area
+            );
+        }
+
+
+        const responseKPIs = {
+            standardKPIs: kpis,
+            customKPIs: customKPI
+        };
+
+        if (kpis.length === 0 && customKPI.length === 0) {
             return res.status(200).json({ message: 'No KPIs found for the provided criteria' });
         }
 
-        res.json(kpis);
+        res.json(responseKPIs);
     } catch (error) {
         console.error('Error fetching KPIs:', error);
         res.status(500).json({ message: 'Server error', error: error.message || error });
     }
 };
+
 
 const createKPI = async (req, res) => {
     try {
