@@ -9,7 +9,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://4smdwkmm-3000.inc1.devtunnels.ms"],
+    origin: [
+      "http://localhost:3000",
+      "https://4smdwkmm-3000.inc1.devtunnels.ms",
+      "http://3.146.253.155:5454",
+    ],
     credentials: true,
   })
 );
