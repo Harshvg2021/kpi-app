@@ -1,5 +1,6 @@
 "use client";
 import { Spinner } from "@/components/custom/Spinner";
+import { SelectedListProvider } from "@/context/ListProvider";
 import { useSession } from "@/hooks/useSession";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
@@ -20,7 +21,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
       </div>
     );
 
-  return <>{children}</>;
+  return <SelectedListProvider>{children}</SelectedListProvider>;
 };
 
 export default Layout;

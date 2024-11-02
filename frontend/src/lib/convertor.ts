@@ -4,7 +4,7 @@ import pptxgen from "pptxgenjs";
 import "jspdf-autotable";
 
 interface KPI {
-  id: string;
+  id: number;
   title: string;
   description: string;
 }

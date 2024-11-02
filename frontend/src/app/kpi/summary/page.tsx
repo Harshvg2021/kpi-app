@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -16,46 +16,27 @@ import {
   exportToPDF,
   exportToPowerPoint,
 } from "@/lib/convertor";
-
-interface KPI {
-  id: string;
-  title: string;
-  description: string;
-}
+import { useSelectedList } from "@/context/ListProvider";
 
 const Page = () => {
   const router = useRouter();
+  const { selectedList } = useSelectedList();
   const [isExporting, setIsExporting] = useState(false);
 
-  const kpis: KPI[] = [
-    {
-      id: "1",
-      title: "KPI 1",
-      description: "Performance metric description for KPI 1",
-    },
-    {
-      id: "2",
-      title: "KPI 2",
-      description: "Performance metric description for KPI 2",
-    },
-    {
-      id: "3",
-      title: "KPI 3",
-      description: "Performance metric description for KPI 3",
-    },
-    {
-      id: "4",
-      title: "KPI 4",
-      description: "Performance metric description for KPI 4",
-    },
-    {
-      id: "5",
-      title: "KPI 5",
-      description: "Performance metric description for KPI 5",
-    },
-  ];
+  useEffect(() => {
+    if (selectedList.length === 0) {
+      router.push("/kpi/therapy");
+    }
+  }, [selectedList, router]);
+
   const handleExport = async (format: "excel" | "pdf" | "ppt") => {
     setIsExporting(true);
+
+    const kpis = selectedList.map((kpi, item) => ({
+      id: item + 1,
+      title: kpi.title,
+      description: kpi.description,
+    }));
     try {
       switch (format) {
         case "excel":
@@ -87,8 +68,8 @@ const Page = () => {
 
         <Table>
           <TableBody>
-            {kpis.map((kpi) => (
-              <TableRow key={kpi.id} className="hover:bg-gray-50">
+            {selectedList.map((kpi, index) => (
+              <TableRow key={index} className="hover:bg-gray-50">
                 <TableCell className="font-medium w-32">{kpi.title}</TableCell>
                 <TableCell className="text-gray-600">
                   {kpi.description}

@@ -25,7 +25,11 @@ export type GetKPIs = {
 };
 
 export const useGetKPIS = (props: GetKPIs) => {
-  return useFetchByPost("/api/kpi/getKPIs", JSON.stringify(props), props);
+  return useFetchByPost<{ title: string; description: string }[]>(
+    "/api/kpi/getKPIs",
+    JSON.stringify(props),
+    props
+  );
 };
 
 export type CreateKPIs = {
