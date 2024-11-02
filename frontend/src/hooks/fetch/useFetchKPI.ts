@@ -1,17 +1,57 @@
-import { useFetch } from "../useFetch";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCustomMutation, useFetch, useFetchByPost } from "../useFetch";
 
 export const useGetTherapyArea = () => {
-  return useFetch("/api/kpi/getTherapyAreas");
+  return useFetch<string[]>("/api/kpi/getTherapyAreas");
 };
 
 export const useGetDistributionModels = () => {
-  return useFetch("/api/kpi/getDistributionModels");
+  return useFetch<string[]>("/api/kpi/getDistributionModels");
 };
 
 export const useGetRegions = () => {
-  return useFetch("/api/kpi/getRegions");
+  return useFetch<string[]>("/api/kpi/getRegions");
 };
 
 export const useSubjectAreas = () => {
-  return useFetch("/api/kpi/getSubjectAreas");
+  return useFetch<string[]>("/api/kpi/getSubjectAreas");
+};
+
+export type GetKPIs = {
+  therapy_area?: string;
+  region?: string;
+  distribution_model?: string;
+  subject_area?: string;
+};
+
+export const useGetKPIS = (props: GetKPIs) => {
+  return useFetchByPost("/api/kpi/getKPIs", JSON.stringify(props), props);
+};
+
+export type CreateKPIs = {
+  therapy_area?: string;
+  region?: string;
+  distribution_model?: string;
+  subject_area?: string;
+};
+
+export type createKPIMutate = {
+  KPI_list: {
+    name: string;
+    description: string;
+  }[];
+};
+
+export const useCreateKPI = (props: GetKPIs) => {
+  const client = useQueryClient();
+  const refetch = JSON.stringify(props);
+  return useCustomMutation<void, createKPIMutate>({
+    apiRoute: "/api/kpi/createKPI",
+    body: props,
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: [refetch],
+      });
+    },
+  });
 };

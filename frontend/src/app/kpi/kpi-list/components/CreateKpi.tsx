@@ -13,9 +13,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateKPI } from "@/hooks/fetch/useFetchKPI";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 const CreateKpi = () => {
+  const search = useSearchParams();
+  const createKpi = useCreateKPI({
+    distribution_model: search.get("distribution")!,
+    region: search.get("region")!,
+    subject_area: search.get("subject")!,
+    therapy_area: search.get("therapy")!,
+  });
+  const [title, setTitle] = React.useState("");
+  const [description, setDescription] = React.useState("");
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -37,6 +48,8 @@ const CreateKpi = () => {
             </Label>
             <Input
               id="name"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Please enter kpi name"
               className="col-span-3"
             />
@@ -46,6 +59,8 @@ const CreateKpi = () => {
               Description
             </Label>
             <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               id="description"
               placeholder="Please enter kpi description"
               className="col-span-3 min-h-20"
@@ -58,7 +73,23 @@ const CreateKpi = () => {
               Close
             </Button>
           </DialogClose>
-          <Button className="bg-blue-500 hover:bg-blue-600" type="submit">
+          <Button
+            loading={createKpi.isPending}
+            onClick={() => {
+              createKpi.mutate({
+                mutationBody: {
+                  KPI_list: [
+                    {
+                      description,
+                      name: title,
+                    },
+                  ],
+                },
+              });
+            }}
+            className="bg-blue-500 hover:bg-blue-600"
+            type="submit"
+          >
             Save changes
           </Button>
         </DialogFooter>

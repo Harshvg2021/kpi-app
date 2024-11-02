@@ -11,7 +11,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { PencilIcon } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useGetKPIS } from "@/hooks/fetch/useFetchKPI";
 
 interface KPI {
   id: string;
@@ -21,6 +22,14 @@ interface KPI {
 
 const KPIList = () => {
   const router = useRouter();
+  const search = useSearchParams();
+  const kpisList = useGetKPIS({
+    distribution_model: search.get("distribution")!,
+    region: search.get("region")!,
+    subject_area: search.get("subject")!,
+    therapy_area: search.get("therapy")!,
+  });
+  console.log(kpisList.data, kpisList.isError);
   const kpis: KPI[] = [
     {
       id: "1",

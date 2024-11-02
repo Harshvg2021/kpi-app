@@ -10,38 +10,37 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { useGetDistributionModels } from "@/hooks/fetch/useFetchKPI";
+import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
+import { useEffect } from "react";
 
-// Define schema using Zod for form validation
 const schema = z.object({
-  region: z.string({ message: "Please select a distribution model" }),
+  distribution: z.string({ message: "Please select a region" }),
 });
 
-// Define TypeScript types for the form
 type FormSchema = z.infer<typeof schema>;
 
-const options = [
-  "Retail",
-  "Speciality Pharmacy",
-  "Buy and Bill",
-  "Hospital Based",
-  "Other",
-];
-
 const Page: React.FC = () => {
-  // Initialize the form with Zod resolver for validation
-  const {
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormSchema>({
+  const distribution = useGetDistributionModels();
+  const form = useForm<FormSchema>({
     resolver: zodResolver(schema),
+    mode: "onChange",
+    // disabled: region.isLoading || region.isPending,
   });
+  const search = useSearchParams();
   const router = useRouter();
-  // Define submit handler with TypeScript type safety
+  const updateSearch = useUpdateSearchParams(true);
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
-    console.log("Selected Region:", data.region);
+    const path = updateSearch("distribution", data.distribution);
+    router.push(`/kpi/subject${path}`);
   };
+
+  useEffect(() => {
+    if (!search.get("therapy")) router.push("/kpi/therapy");
+    if (!search.get("region")) router.push("/kpi/region");
+  }, [search, router]);
 
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
@@ -49,7 +48,7 @@ const Page: React.FC = () => {
         {/* Step Indicator */}
         <div className="mb-6 flex justify-center space-x-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-gray-300" />
           <div className="w-3 h-3 rounded-full bg-gray-300" />
         </div>
 
@@ -63,41 +62,54 @@ const Page: React.FC = () => {
         </p>
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select onValueChange={(value) => setValue("region", value)}>
-            <SelectTrigger className="w-full border border-gray-300 rounded-md py-2 px-4">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.region && (
-            <p className="text-red-400 text-sm">{errors.region.message}</p>
-          )}
+        <Form {...form}>
+          {" "}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="distribution"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full border border-gray-300 rounded-md py-2 px-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {distribution.data?.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-end gap-2 mt-6">
-            <Button
-              onClick={() => router.push("/kpi/region")}
-              type="button"
-              className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={() => router.push("/kpi/subject")}
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4"
-            >
-              Next
-            </Button>
-          </div>
-        </form>
+            {/* Navigation Buttons */}
+            <div className="flex justify-end gap-2 mt-6">
+              <Button
+                onClick={() => router.push("/kpi/therapy")}
+                type="button"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
+              >
+                Back
+              </Button>
+              <Button
+                disabled={!form.formState.isValid}
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4"
+              >
+                Next
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );

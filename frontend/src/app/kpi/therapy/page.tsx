@@ -6,54 +6,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useGetTherapyArea } from "@/hooks/fetch/useFetchKPI";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 
 // Define schema using Zod for form validation
 const schema = z.object({
-  therapyArea: z.string({ message: "Please select a therapy area" }),
+  therapyArea: z.string({
+    required_error: "Please select therapy",
+  }),
 });
 
-// Define TypeScript types for the form
-type FormSchema = z.infer<typeof schema>;
-
-const options = [
-  "Active Patients",
-  "Total Enrollments",
-  "At Risk Patients",
-  "Discontinued Patients",
-  "Avg Time to Fill",
-  "Total Enrolling HCP",
-  "Total Units",
-  "Total Writers",
-  "Total Targets",
-  "Refill Risk",
-  "Pending Patients",
-];
-
 const Page: React.FC = () => {
-  // Initialize the form with Zod resolver for validation
-  const {
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormSchema>({
-    resolver: zodResolver(schema),
-  });
   const router = useRouter();
-  // Define submit handler with TypeScript type safety
-  const onSubmit: SubmitHandler<FormSchema> = (data) => {
-    console.log("Selected Therapy Area:", data.therapyArea);
-  };
-
   const therapy = useGetTherapyArea();
 
-  console.log(therapy.data);
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    mode: "onChange",
+  });
+  const updateSearch = useUpdateSearchParams(true);
 
+  function onSubmit(data: z.infer<typeof schema>) {
+    const path = updateSearch("therapy", data.therapyArea);
+    router.push(`/kpi/region${path}`);
+  }
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
       <div className="bg-white shadow-lg space-y-4 rounded-3xl p-8 max-w-md w-full ">
@@ -74,41 +62,54 @@ const Page: React.FC = () => {
         </p>
 
         {/* Form */}
-        <form  onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Select onValueChange={(value) => setValue("therapyArea", value)}>
-            <SelectTrigger className="w-full border border-gray-300 rounded-md py-2 px-4">
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.therapyArea && (
-            <p className="text-red-500 text-sm">{errors.therapyArea.message}</p>
-          )}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="therapyArea"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full border border-gray-300 rounded-md py-2 px-4">
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {therapy.data?.map((option) => (
+                        <SelectItem key={option} value={option}>
+                          {option}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Navigation Buttons */}
-          <div className="flex justify-end gap-2 mt-6">
-            <Button
-              onClick={() => router.push("/")}
-              type="button"
-              className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
-            >
-              Back
-            </Button>
-            <Button
-              onClick={() => router.push("/kpi/region")}
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4"
-            >
-              Next
-            </Button>
-          </div>
-        </form>
+            {/* Navigation Buttons */}
+            <div className="flex justify-end gap-2 mt-6">
+              <Button
+                onClick={() => router.push("/")}
+                type="button"
+                className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
+              >
+                Back
+              </Button>
+              <Button
+                disabled={!form.formState.isValid}
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 px-4"
+              >
+                Next
+              </Button>
+            </div>
+          </form>
+        </Form>
       </div>
     </div>
   );
