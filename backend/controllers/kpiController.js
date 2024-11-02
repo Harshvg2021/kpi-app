@@ -37,7 +37,7 @@ const getKPIs = async (req, res) => {
 
 
         const responseKPIs = {
-            standardKPIs: kpis,
+            standardKPIs: kpis.map,
             customKPIs: customKPI
         };
 
