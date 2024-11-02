@@ -23,34 +23,45 @@ const getKPIs = async (req, res) => {
         });
 
         const user = await User.findById(userId).select('customKPIs');
-        let customKPI = [];
+        let customKPIList = [];
 
         if (user) {
-
-            customKPI = user.customKPIs.filter(customKPI =>
+            const customKPIs = user.customKPIs.filter(customKPI =>
                 customKPI.therapy_area === therapy_area &&
                 customKPI.region === region &&
                 customKPI.distribution_model === distribution_model &&
                 customKPI.subject_area === subject_area
             );
+
+            customKPIList = customKPIs.flatMap(customKPI =>
+                customKPI.KPIs.map(kpi => ({
+                    title: kpi.name,
+                    description: kpi.description
+                }))
+            );
         }
 
+        const standardKPIList = kpis.flatMap(kpi =>
+            kpi.KPI_list.map(kpiItem => ({
+                title: kpiItem.name,
+                description: kpiItem.description
+            }))
+        );
 
-        const responseKPIs = {
-            standardKPIs: kpis.map,
-            customKPIs: customKPI
-        };
+        const allKPIs = [...standardKPIList, ...customKPIList];
 
-        if (kpis.length === 0 && customKPI.length === 0) {
+        if (allKPIs.length === 0) {
             return res.status(200).json({ message: 'No KPIs found for the provided criteria' });
         }
 
-        res.json(responseKPIs);
+        res.json(allKPIs);
     } catch (error) {
         console.error('Error fetching KPIs:', error);
         res.status(500).json({ message: 'Server error', error: error.message || error });
     }
 };
+
+
 
 
 const createKPI = async (req, res) => {
