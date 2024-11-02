@@ -1,16 +1,16 @@
 const KPI = require('../models/KPI');
-const TherapyArea = require('../models/TherapyArea'); 
-const DistributionModel = require('../models/DistributionModel'); 
-const Region = require('../models/Region'); 
+const TherapyArea = require('../models/TherapyArea');
+const DistributionModel = require('../models/DistributionModel');
+const Region = require('../models/Region');
 const SubjectArea = require('../models/SubjectArea')
 const User = require('../models/user')
 
 
 const getKPIs = async (req, res) => {
     const { therapy_area, region, distribution_model, subject_area } = req.body;
-    const userId = req.user.userId; 
+    const userId = req.user.userId;
 
-    console.log("Request received:", req.body); 
+    console.log("Request received:", req.body);
 
     try {
         console.log("inside KPI route");
@@ -27,7 +27,7 @@ const getKPIs = async (req, res) => {
 
         if (user) {
 
-            customKPI = user.customKPIs.filter(customKPI => 
+            customKPI = user.customKPIs.filter(customKPI =>
                 customKPI.therapy_area === therapy_area &&
                 customKPI.region === region &&
                 customKPI.distribution_model === distribution_model &&
@@ -55,7 +55,7 @@ const getKPIs = async (req, res) => {
 
 const createKPI = async (req, res) => {
     try {
-        
+
         const { therapy_area, region, distribution_model, subject_area, KPI_list } = req.body;
 
         const newKPI = new KPI({
@@ -67,7 +67,7 @@ const createKPI = async (req, res) => {
         });
 
         const savedKPI = await newKPI.save();
-        res.status(201).json(savedKPI); 
+        res.status(201).json(savedKPI);
     } catch (error) {
         console.error('Error creating KPI:', error);
         res.status(500).json({ message: 'Error creating KPI entry', error });
@@ -123,7 +123,7 @@ const addCustomKPI = async (req, res) => {
 
     try {
         const userId = req.user.userId;
-        console.log("user id : ",userId)
+        console.log("user id : ", userId)
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -164,10 +164,12 @@ const addCustomKPI = async (req, res) => {
     }
 };
 
-module.exports = { getKPIs,
+module.exports = {
+    getKPIs,
     createKPI,
     getTherapyAreas,
     getDistributionModels,
     getRegions,
     getSubjectAreas,
-    addCustomKPI };
+    addCustomKPI
+};
