@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, Upload } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetKPIS } from "@/hooks/fetch/useFetchKPI";
@@ -17,6 +17,8 @@ import { useEffect } from "react";
 import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 import { useSelectedList } from "@/context/ListProvider";
 import { Spinner } from "@/components/custom/Spinner";
+import { parseExcelFile } from "@/lib/convertor";
+import { toast } from "sonner";
 
 const KPIList = () => {
   const router = useRouter();
@@ -32,9 +34,24 @@ const KPIList = () => {
   });
 
   const { addToList, removeFromList, selectedList } = useSelectedList();
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      try {
+        const data = await parseExcelFile(file);
 
+        // setKpiData(data);
+        console.log("Parsed Data:", data);
+        toast.info(JSON.stringify(data));
+      } catch (error) {
+        toast.error("Error parsing file");
+        console.error("Error parsing file:", error);
+      }
+    }
+  };
   useEffect(() => {
-    // Ensure required parameters are present in the URL
     if (!search.get("therapy"))
       router.push(`/kpi/therapy1${updateSearch("therapy")}`);
     if (!search.get("region"))
@@ -47,12 +64,30 @@ const KPIList = () => {
 
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
-      <div className="bg-white p-8 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col gap-4 mx-auto max-h-[90vh]">
-        <div className="flex justify-between items-center">
+      <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col gap-4 mx-auto max-h-[90vh]">
+        <div className="flex md:justify-between flex-col md:flex-row items-center">
           <h1 className="text-2xl font-bold">
             KPI List - {search.get("subject")}
           </h1>
-          <CreateKpi />
+
+          <div className="flex gap-2 items-center">
+            <div>
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="file-upload"
+              />
+
+              <label htmlFor="file-upload">
+                <div className="bg-blue-500 text-white gap-2 items-center flex px-4 py-2 text-sm font-semibold rounded-md cursor-pointer hover:bg-blue-600">
+                  <Upload size={18} /> Upload Excel
+                </div>
+              </label>
+            </div>
+            <CreateKpi />
+          </div>
         </div>
 
         <div className="rounded-lg border max-h-[70vh] min-h-[70vh] w-full overflow-y-auto bg-white shadow">
@@ -68,8 +103,8 @@ const KPIList = () => {
             <TableBody>
               {kpisList.isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    <Spinner />
+                  <TableCell colSpan={4} className="text-center mx-auto">
+                    <Spinner className="mx-auto" />
                   </TableCell>
                 </TableRow>
               ) : null}
@@ -115,7 +150,7 @@ const KPIList = () => {
 
         <div className="flex justify-center">
           <Button
-            onClick={() => router.push("/kpi/summary")}
+            onClick={() => router.push(`/kpi/summary?${search.toString()}`)}
             disabled={selectedList.length === 0}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >

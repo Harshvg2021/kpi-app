@@ -33,7 +33,11 @@ const CreateKpi = () => {
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant={"default"} className="bg-blue-500 hover:bg-blue-600">
+        <Button
+          size={"sm"}
+          variant={"default"}
+          className="bg-blue-500 hover:bg-blue-600"
+        >
           Add New KPI
         </Button>
       </DialogTrigger>
@@ -78,7 +82,7 @@ const CreateKpi = () => {
           </DialogClose>
           <Button
             loading={createKpi.isPending}
-            onClick={async() => {
+            onClick={async () => {
               await createKpi.mutateAsync({
                 mutationBody: {
                   kpi_description: description,

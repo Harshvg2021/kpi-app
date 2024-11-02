@@ -87,3 +87,42 @@ export const exportToPowerPoint = async (kpis: KPI[]) => {
 
   await pptx.writeFile({ fileName: "kpi-summary-ppt" });
 };
+
+interface KpiData {
+  title: string;
+  description: string;
+}
+
+export const parseExcelFile = (file: File): Promise<KpiData[]> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      const data = new Uint8Array(event.target?.result as ArrayBuffer);
+      const workbook = XLSX.read(data, { type: "array" });
+
+      // Assuming data is in the first sheet
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+
+      // Convert the sheet to JSON
+      const jsonData = XLSX.utils.sheet_to_json<{
+        title: string;
+        description: string;
+      }>(worksheet);
+
+      // Map to extract only `title` and `description`
+      const parsedData: KpiData[] = jsonData
+        .map((row) => ({
+          title: row.title || "",
+          description: row.description || "",
+        }))
+        .filter((e) => e.title !== "" && e.description !== "");
+
+      resolve(parsedData);
+    };
+
+    reader.onerror = (error) => reject(error);
+    reader.readAsArrayBuffer(file);
+  });
+};

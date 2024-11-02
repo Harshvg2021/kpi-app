@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download, X, Share2 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +22,7 @@ const Page = () => {
   const router = useRouter();
   const { selectedList } = useSelectedList();
   const [isExporting, setIsExporting] = useState(false);
-
+  const search = useSearchParams();
   useEffect(() => {
     if (selectedList.length === 0) {
       router.push("/kpi/therapy");
@@ -81,7 +81,7 @@ const Page = () => {
 
         <div className="flex justify-end items-center gap-4 mt-6">
           <Button
-            onClick={() => router.push("/kpi/kpi-list")}
+            onClick={() => router.push(`/kpi/kpi-list?${search.toString()}`)}
             variant="outline"
             className="text-gray-600"
           >
