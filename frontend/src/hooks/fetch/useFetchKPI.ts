@@ -36,17 +36,15 @@ export type CreateKPIs = {
 };
 
 export type createKPIMutate = {
-  KPI_list: {
-    name: string;
-    description: string;
-  }[];
+  kpi_name: string;
+  kpi_description: string;
 };
 
 export const useCreateKPI = (props: GetKPIs) => {
   const client = useQueryClient();
   const refetch = JSON.stringify(props);
   return useCustomMutation<void, createKPIMutate>({
-    apiRoute: "/api/kpi/createKPI",
+    apiRoute: "/api/kpi/addCustomKPI",
     body: props,
     onSuccess: () => {
       client.invalidateQueries({

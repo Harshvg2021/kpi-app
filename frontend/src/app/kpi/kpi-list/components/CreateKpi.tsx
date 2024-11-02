@@ -15,10 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateKPI } from "@/hooks/fetch/useFetchKPI";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 const CreateKpi = () => {
   const search = useSearchParams();
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const createKpi = useCreateKPI({
     distribution_model: search.get("distribution")!,
     region: search.get("region")!,
@@ -28,7 +31,7 @@ const CreateKpi = () => {
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         <Button variant={"default"} className="bg-blue-500 hover:bg-blue-600">
           Add New KPI
@@ -75,17 +78,17 @@ const CreateKpi = () => {
           </DialogClose>
           <Button
             loading={createKpi.isPending}
-            onClick={() => {
-              createKpi.mutate({
+            onClick={async() => {
+              await createKpi.mutateAsync({
                 mutationBody: {
-                  KPI_list: [
-                    {
-                      description,
-                      name: title,
-                    },
-                  ],
+                  kpi_description: description,
+                  kpi_name: title,
                 },
               });
+              setTitle("");
+              setDescription("");
+              setDialogOpen(false);
+              toast.success("KPI created successfully");
             }}
             className="bg-blue-500 hover:bg-blue-600"
             type="submit"

@@ -38,10 +38,13 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!search.get("therapy")) router.push("/kpi/therapy");
-    if (!search.get("region")) router.push("/kpi/region");
-    if (!search.get("distribution")) router.push("/kpi/distribution");
-  }, [search, router]);
+    if (!search.get("therapy"))
+      router.push(`/kpi/therapy${updateSearch("therapy")}`);
+    if (!search.get("region"))
+      router.push(`/kpi/region${updateSearch("region")}`);
+    if (!search.get("distribution"))
+      router.push(`/kpi/distribution${updateSearch("distribution")}`);
+  }, [search, router, updateSearch]);
 
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
@@ -49,8 +52,8 @@ const Page: React.FC = () => {
         {/* Step Indicator */}
         <div className="mb-6 flex justify-center space-x-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <div className="w-3 h-3 rounded-full bg-gray-300" />
-          <div className="w-3 h-3 rounded-full bg-gray-300" />
+          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-blue-500" />
         </div>
 
         {/* Form Header */}
@@ -95,7 +98,11 @@ const Page: React.FC = () => {
             {/* Navigation Buttons */}
             <div className="flex justify-end gap-2 mt-6">
               <Button
-                onClick={() => router.push("/kpi/therapy")}
+                onClick={() =>
+                  router.push(
+                    `/kpi/distribution${updateSearch("distribution")}`
+                  )
+                }
                 type="button"
                 className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
               >

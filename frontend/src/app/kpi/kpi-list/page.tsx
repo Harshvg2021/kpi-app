@@ -13,6 +13,8 @@ import { PencilIcon } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetKPIS } from "@/hooks/fetch/useFetchKPI";
+import { useEffect } from "react";
+import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 
 interface KPI {
   id: string;
@@ -29,6 +31,17 @@ const KPIList = () => {
     subject_area: search.get("subject")!,
     therapy_area: search.get("therapy")!,
   });
+  const updateSearch = useUpdateSearchParams(true);
+  useEffect(() => {
+    if (!search.get("therapy"))
+      router.push(`/kpi/therapy1${updateSearch("therapy")}`);
+    if (!search.get("region"))
+      router.push(`/kpi/region${updateSearch("region")}`);
+    if (!search.get("distribution"))
+      router.push(`/kpi/distribution${updateSearch("distribution")}`);
+    if (!search.get("subject"))
+      router.push(`/kpi/subject${updateSearch("subject")}`);
+  }, [search, router, updateSearch]);
   console.log(kpisList.data, kpisList.isError);
   const kpis: KPI[] = [
     {
@@ -85,7 +98,9 @@ const KPIList = () => {
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
       <div className="bg-white p-8 my-8 rounded-lg shadow-md max-w-4xl flex flex-col gap-4 mx-auto max-h-[90vh]">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">KPI List - Patient</h1>
+          <h1 className="text-2xl font-bold">
+            KPI List - {search.get("subject")}
+          </h1>
           <CreateKpi />
         </div>
 
