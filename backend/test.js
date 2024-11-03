@@ -1,50 +1,40 @@
-// seedUser.js
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 require('dotenv').config();
+const mongoose = require('mongoose');
+const Category = require('./models/Category');  // Adjust path as needed
 
-const User = require('./models/user');
+// MongoDB URI
+const MONGODB_URI = process.env.MONGODB_URI;
 
-// Database connection
-console.log(process.env.MONGODB_URI)
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    family: 4
-}).then(() => {
-    console.log('Connected to MongoDB');
-    seedUser();
-}).catch(error => console.log('MongoDB connection error:', error));
+// Category names to insert
+const categories = ['Patients', 'Sales', 'Marketing', 'Medical', 'Market Access'];
 
-// Seed function to create a user
-const seedUser = async () => {
+// Function to connect to the database and add categories
+const addCategories = async () => {
     try {
-        const email = 'test@gmail.com';
-        const plainPassword = 'abc123';
+        // Connect to MongoDB
+        await mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+        console.log("Connected to MongoDB.");
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            console.log('User already exists');
-            mongoose.connection.close();
-            return;
+        // Iterate over each category and add if it doesn't exist
+        for (const name of categories) {
+            const existingCategory = await Category.findOne({ name });
+            if (!existingCategory) {
+                const newCategory = new Category({ name });
+                await newCategory.save();
+                console.log(`Category '${name}' added.`);
+            } else {
+                console.log(`Category '${name}' already exists.`);
+            }
         }
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
-        // Create new user
-        const user = new User({
-            email,
-            password: hashedPassword
-        });
-
-        await user.save();
-        console.log('User created:', { email });
-
+        console.log("All categories processed.");
     } catch (error) {
-        console.error('Error seeding user:', error);
+        console.error("Error adding categories:", error);
     } finally {
-        mongoose.connection.close();
+        // Disconnect from the database
+        mongoose.disconnect();
     }
 };
+
+// Run the function
+addCategories();

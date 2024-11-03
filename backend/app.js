@@ -17,9 +17,12 @@ app.use(
     credentials: true,
   })
 );
-
+//TODO: add update and delete functionality , 
+//TODO: add catalog in KPI.
 mongoose
   .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
     family: 4,
   })
   .then(() => {

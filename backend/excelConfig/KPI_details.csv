@@ -1,0 +1,39 @@
+Region,Therapy Area,Distribution Model,Subject Area,Category,KPI,Definition
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Activie Patients,Total Number of Patients whose status is 'Active' 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients , Total Enrollments ,Total number of patients enrolled for the product 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,At Risk Patients ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Discontinued Patients ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Avg Time to Fill,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Total Enrolling HCP,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Total Units,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Total Writers ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Total Targets ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Refill Risk,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Commercial,Patients ,Pending Patients ,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,TRx,Total Number of Prescription
+US,Central Nervous System,Retail,Commercial,Sales,NRx,Total Number of Repeat Prescription
+US,Central Nervous System,Retail,Commercial,Sales,NBRx,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,TRx Market Share,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,NRx Market Share,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,New Writers,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,Repeat Writers,To be added 
+US,Central Nervous System,Retail,Commercial,Sales,Total Writers ,To be added 
+US,Rare Diseases ,Buy and Bill,Commercial,Sales,Units,To be added 
+US,Rare Diseases ,Buy and Bill,Commercial,Sales,ADS,Average Daily Sales in Dollars
+US,Rare Diseases ,Buy and Bill,Commercial,Sales,ADU,Average Daily Units of Brand
+US,Rare Diseases ,Buy and Bill,Commercial,Sales,Units,Total Quantity of Units sold 
+US,Rare Diseases ,Specialty Pharmacy,Marketing,Marketing,HCP Engaged,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Marketing,Marketing,HCP Reached,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Marketing,Marketing,Campaign Type,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Marketing,Marketing,Content Type ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Marketing,Marketing,Channel ,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Medical,Medical,# Scientific Interactions,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Medical,Medical,Outreach,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Medical,Medical,Interactions by KOLs,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Medical,Medical,Total number of MIRFs,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Medical,Medical,Closed MIRFs,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Market Access,Market Access ,Approval Rate,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Market Access,Market Access ,Abandonmate Rate,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Market Access,Market Access ,Rejection Rate,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Market Access,Market Access ,Copay Utilization,To be added 
+US,Rare Diseases ,Specialty Pharmacy,Market Access,Market Access ,Average OOP,To be added 

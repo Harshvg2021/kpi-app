@@ -4,6 +4,7 @@ const DistributionModel = require("../models/DistributionModel");
 const Region = require("../models/Region");
 const SubjectArea = require("../models/SubjectArea");
 const User = require("../models/user");
+const Category = require("../models/Category");
 
 const getKPIs = async (req, res) => {
   const { therapy_area, region, distribution_model, subject_area } = req.body;
@@ -20,7 +21,7 @@ const getKPIs = async (req, res) => {
       distribution_model,
       subject_area,
     });
-
+    console.log(kpis)
     const user = await User.findById(userId).select("customKPIs");
     let customKPIList = [];
 
@@ -37,6 +38,7 @@ const getKPIs = async (req, res) => {
         customKPI.KPIs.map((kpi) => ({
           title: kpi.name,
           description: kpi.description,
+          category : kpi.category
         }))
       );
     }
@@ -45,10 +47,11 @@ const getKPIs = async (req, res) => {
       kpi.KPI_list.map((kpiItem) => ({
         title: kpiItem.name,
         description: kpiItem.description,
+        category : kpiItem.category
       }))
     );
-
     const allKPIs = [...standardKPIList, ...customKPIList];
+    console.log(allKPIs)
 
     if (allKPIs.length === 0) {
       return res.status(200).json([]);
@@ -120,6 +123,18 @@ const getRegions = async (req, res) => {
   }
 };
 
+const getCategorys = async (req, res) => {
+  try {
+    const Categorys = await Category.distinct("name");
+    res.json(Categorys);
+  } catch (error) {
+    console.error("Error fetching Categorys:", error);
+    res
+      .status(500)
+      .json({ message: "Server error", error: error.message || error });
+  }
+};
+
 const getSubjectAreas = async (req, res) => {
   try {
     const subjectAreas = await SubjectArea.distinct("name");
@@ -168,6 +183,7 @@ const addCustomKPI = async (req, res) => {
       customKPIEntry.KPIs.push({
         name: kpi_name,
         description: kpi_description,
+        category : "Custom"
       });
     } else {
       customKPIEntry = {
@@ -179,6 +195,7 @@ const addCustomKPI = async (req, res) => {
           {
             name: kpi_name,
             description: kpi_description,
+            category : "Custom"
           },
         ],
       };
@@ -207,4 +224,5 @@ module.exports = {
   getRegions,
   getSubjectAreas,
   addCustomKPI,
+  getCategorys
 };
