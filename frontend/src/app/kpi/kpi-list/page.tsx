@@ -9,21 +9,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PencilIcon, Upload } from "lucide-react";
+import { PencilIcon, SkipBack, Trash2, Upload } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useGetKPIS } from "@/hooks/fetch/useFetchKPI";
-import { useEffect } from "react";
+import { useCategories, useGetKPIS } from "@/hooks/fetch/useFetchKPI";
+import { useEffect, useState } from "react";
 import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 import { useSelectedList } from "@/context/ListProvider";
 import { Spinner } from "@/components/custom/Spinner";
 import { parseExcelFile } from "@/lib/convertor";
 import { toast } from "sonner";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import { DialogDescription } from "@/components/ui/dialog";
+import { PopoverClose } from "@radix-ui/react-popover";
+import UpdateKpi from "./components/UpdateKpi";
 
 const KPIList = () => {
   const router = useRouter();
   const search = useSearchParams();
   const updateSearch = useUpdateSearchParams(true);
+  const [category, setCategory] = useState<string>("All");
+  const { data } = useCategories();
 
   // Fetch KPIs based on search parameters
   const kpisList = useGetKPIS({
@@ -33,6 +53,28 @@ const KPIList = () => {
     therapy_area: search.get("therapy")!,
   });
 
+  const [KPI, setKPI] = useState<
+    {
+      title: string;
+      description: string;
+      category?: string;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    if (kpisList.data) {
+      setKPI(kpisList.data);
+    }
+  }, [kpisList.data]);
+
+  useEffect(() => {
+    if (category !== "All") {
+      setKPI(kpisList.data?.filter((kpi) => kpi.category === category) ?? []);
+    } else {
+      setKPI(kpisList.data ?? []);
+    }
+  }, [category]);
+
   const { addToList, removeFromList, selectedList } = useSelectedList();
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -41,8 +83,6 @@ const KPIList = () => {
     if (file) {
       try {
         const data = await parseExcelFile(file);
-
-        // setKpiData(data);
         console.log("Parsed Data:", data);
         toast.info(JSON.stringify(data));
       } catch (error) {
@@ -69,7 +109,21 @@ const KPIList = () => {
           <h1 className="text-2xl font-bold">
             KPI List - {search.get("subject")}
           </h1>
-
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="All">All categories</SelectItem>
+                {data?.map((e) => (
+                  <SelectItem key={e} value={e}>
+                    {e}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <div className="flex gap-2 items-center">
             <div>
               <input
@@ -115,7 +169,7 @@ const KPIList = () => {
                   </TableCell>
                 </TableRow>
               )}
-              {kpisList.data?.toReversed().map((kpi, index) => (
+              {KPI?.toReversed().map((kpi, index) => (
                 <TableRow key={index} className="align-top even:bg-blue-50">
                   <TableCell className="align-top">
                     <div className="flex items-start">
@@ -137,10 +191,35 @@ const KPIList = () => {
                   <TableCell className="align-top">
                     <p className="line-clamp-6">{kpi.description}</p>
                   </TableCell>
-                  <TableCell className="align-top">
-                    <Button variant="ghost" size="icon">
-                      <PencilIcon className="h-4 w-4" />
-                    </Button>
+                  <TableCell className="align-top flex ">
+                    <UpdateKpi
+                      defaultTitle={kpi.title}
+                      defaultDescription={kpi.description}
+                    />
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="max-w-56 space-y-2">
+                        <Label>Are you sure?</Label>
+                        <p className="text-sm ">
+                          This action cannot be undone.
+                        </p>
+
+                        <div className="flex gap-2 pt-4">
+                          <Button size={"sm"} variant={"destructive"}>
+                            Delete
+                          </Button>
+                          <PopoverClose>
+                            <Button size={"sm"} variant={"outline"}>
+                              Cancel
+                            </Button>
+                          </PopoverClose>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </TableCell>
                 </TableRow>
               ))}
@@ -148,7 +227,14 @@ const KPIList = () => {
           </Table>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4">
+          <Button
+            onClick={() => router.push(`/kpi/subject?${search.toString()}`)}
+            icon={<SkipBack size={12} />}
+            className="bg-blue-900 hover:bg-blue-800 "
+          >
+            Back
+          </Button>
           <Button
             onClick={() => router.push(`/kpi/summary?${search.toString()}`)}
             disabled={selectedList.length === 0}

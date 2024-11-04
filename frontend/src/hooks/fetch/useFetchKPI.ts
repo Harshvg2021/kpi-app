@@ -17,6 +17,10 @@ export const useSubjectAreas = () => {
   return useFetch<string[]>("/api/kpi/getSubjectAreas");
 };
 
+export const useCategories = () => {
+  return useFetch<string[]>("/api/kpi/getCategories");
+};
+
 export type GetKPIs = {
   therapy_area?: string;
   region?: string;
@@ -25,11 +29,9 @@ export type GetKPIs = {
 };
 
 export const useGetKPIS = (props: GetKPIs) => {
-  return useFetchByPost<{ title: string; description: string }[]>(
-    "/api/kpi/getKPIs",
-    JSON.stringify(props),
-    props
-  );
+  return useFetchByPost<
+    { title: string; description: string; category?: string }[]
+  >("/api/kpi/getKPIs", JSON.stringify(props), props);
 };
 
 export type CreateKPIs = {
