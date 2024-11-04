@@ -7,7 +7,7 @@ const {
   getRegions,
   getSubjectAreas,
   addCustomKPI,
-  getCategorys,
+  getCategories,
 } = require("../controllers/kpiController");
 const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -20,7 +20,7 @@ router.get("/getTherapyAreas", authMiddleware, getTherapyAreas);
 router.get("/getDistributionModels", authMiddleware, getDistributionModels);
 router.get("/getRegions", authMiddleware, getRegions);
 router.get("/getSubjectAreas", authMiddleware, getSubjectAreas);
-router.get("/getCategorys",authMiddleware, getCategorys)
+router.get("/getCategories", authMiddleware, getCategories);
 router.post("/addCustomKPI", authMiddleware, addCustomKPI);
 
 module.exports = router;
