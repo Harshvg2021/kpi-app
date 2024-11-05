@@ -21,7 +21,7 @@ const getKPIs = async (req, res) => {
       distribution_model,
       subject_area,
     });
-    console.log(kpis)
+    console.log(kpis);
     const user = await User.findById(userId).select("customKPIs");
     let customKPIList = [];
 
@@ -38,7 +38,7 @@ const getKPIs = async (req, res) => {
         customKPI.KPIs.map((kpi) => ({
           title: kpi.name,
           description: kpi.description,
-          category : kpi.category
+          category: kpi.category,
         }))
       );
     }
@@ -47,11 +47,11 @@ const getKPIs = async (req, res) => {
       kpi.KPI_list.map((kpiItem) => ({
         title: kpiItem.name,
         description: kpiItem.description,
-        category : kpiItem.category
+        category: kpiItem.category,
       }))
     );
     const allKPIs = [...standardKPIList, ...customKPIList];
-    console.log(allKPIs)
+    console.log(allKPIs);
 
     if (allKPIs.length === 0) {
       return res.status(200).json([]);
@@ -123,12 +123,12 @@ const getRegions = async (req, res) => {
   }
 };
 
-const getCategorys = async (req, res) => {
+const getCategories = async (req, res) => {
   try {
-    const Categorys = await Category.distinct("name");
-    res.json(Categorys);
+    const categories = await Category.distinct("name");
+    res.json(categories);
   } catch (error) {
-    console.error("Error fetching Categorys:", error);
+    console.error("Error fetching categories:", error);
     res
       .status(500)
       .json({ message: "Server error", error: error.message || error });
@@ -183,7 +183,7 @@ const addCustomKPI = async (req, res) => {
       customKPIEntry.KPIs.push({
         name: kpi_name,
         description: kpi_description,
-        category : "Custom"
+        category: "Custom",
       });
     } else {
       customKPIEntry = {
@@ -195,7 +195,7 @@ const addCustomKPI = async (req, res) => {
           {
             name: kpi_name,
             description: kpi_description,
-            category : "Custom"
+            category: "Custom",
           },
         ],
       };
@@ -204,12 +204,10 @@ const addCustomKPI = async (req, res) => {
 
     await user.save();
 
-    res
-      .status(201)
-      .json({
-        message: "Custom KPI added successfully",
-        customKPI: customKPIEntry,
-      });
+    res.status(201).json({
+      message: "Custom KPI added successfully",
+      customKPI: customKPIEntry,
+    });
   } catch (error) {
     console.error("Error adding custom KPI:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -295,5 +293,6 @@ module.exports = {
   addCustomKPI,
   getCategorys,
   deleteCustomKPI,
-  editCustomKPI
+  editCustomKPI,
+  getCategories,
 };
