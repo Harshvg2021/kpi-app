@@ -22,7 +22,8 @@ const userSchema = new mongoose.Schema({
             KPIs: [
                 {
                     name: String,
-                    description: String
+                    description: String,
+                    category : String
                 }
             ]
         }],
