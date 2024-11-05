@@ -291,7 +291,6 @@ module.exports = {
   getRegions,
   getSubjectAreas,
   addCustomKPI,
-  getCategorys,
   deleteCustomKPI,
   editCustomKPI,
   getCategories,
