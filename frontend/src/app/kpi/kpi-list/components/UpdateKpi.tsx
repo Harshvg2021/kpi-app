@@ -13,9 +13,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useEditCustomKPI } from "@/hooks/fetch/useFetchKPI";
 import { PencilIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const UpdateKpi = ({
@@ -27,15 +28,18 @@ const UpdateKpi = ({
 }) => {
   const search = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const updateKPI = useEditCustomKPI();
   //   const createKpi = useCreateKPI({
   //     distribution_model: search.get("distribution")!,
   //     region: search.get("region")!,
   //     subject_area: search.get("subject")!,
   //     therapy_area: search.get("therapy")!,
   //   });
+
   const [title, setTitle] = React.useState(defaultTitle);
+
   const [description, setDescription] = React.useState(defaultDescription);
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
@@ -57,6 +61,7 @@ const UpdateKpi = ({
             </Label>
             <Input
               id="name"
+              disabled
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Please enter kpi name"
@@ -83,18 +88,22 @@ const UpdateKpi = ({
             </Button>
           </DialogClose>
           <Button
-            // loading={createKpi.isPending}
+            loading={updateKPI.isPending}
             onClick={async () => {
-              //   await createKpi.mutateAsync({
-              //     mutationBody: {
-              //       kpi_description: description,
-              //       kpi_name: title,
-              //     },
-              //   });
-              setTitle("");
-              setDescription("");
+              const success = await updateKPI.mutateAsync({
+                mutationBody: {
+                  new_description: description,
+                  region: search.get("region")!,
+                  subject_area: search.get("subject")!,
+                  distribution_model: search.get("distribution")!,
+                  therapy_area: search.get("therapy")!,
+                  kpi_name: title,
+                },
+              });
+              // setTitle("");
+              setDescription(success ? description : defaultDescription);
               setDialogOpen(false);
-              toast.warning("Feature coming soon");
+              toast.success("Updated successfully");
             }}
             className="bg-blue-500 hover:bg-blue-600"
             type="submit"

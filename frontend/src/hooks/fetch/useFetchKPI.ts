@@ -1,5 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCustomMutation, useFetch, useFetchByPost } from "../useFetch";
+import { useFetch, useFetchByPost } from "../useFetch";
+import { useCustomMutation } from "../useCustomMutation";
 
 export const useGetTherapyArea = () => {
   return useFetch<string[]>("/api/kpi/getTherapyAreas");
@@ -31,7 +32,7 @@ export type GetKPIs = {
 export const useGetKPIS = (props: GetKPIs) => {
   return useFetchByPost<
     { title: string; description: string; category?: string }[]
-  >("/api/kpi/getKPIs", JSON.stringify(props), props);
+  >("/api/kpi/getKPIs", "kpi", props);
 };
 
 export type CreateKPIs = {
@@ -49,12 +50,59 @@ export type createKPIMutate = {
 export const useCreateKPI = (props: GetKPIs) => {
   const client = useQueryClient();
   const refetch = JSON.stringify(props);
-  return useCustomMutation<void, createKPIMutate>({
+  return useCustomMutation<void, createKPIMutate, null>({
     apiRoute: "/api/kpi/addCustomKPI",
     body: props,
     onSuccess: () => {
       client.invalidateQueries({
-        queryKey: [refetch],
+        queryKey: ["kpi"],
+      });
+    },
+  });
+};
+
+export const useDeleteKPI = () => {
+  const query = useQueryClient();
+  return useCustomMutation<
+    null,
+    {
+      kpi_name: string;
+      therapy_area: string;
+      region: string;
+      distribution_model: string;
+      subject_area: string;
+    },
+    null
+  >({
+    method: "DELETE",
+    apiRoute: "/api/kpi/deleteCustomKPI",
+    onSuccess: () => {
+      query.refetchQueries({
+        queryKey: ["kpi"],
+      });
+    },
+  });
+};
+
+export const useEditCustomKPI = () => {
+  const query = useQueryClient();
+  return useCustomMutation<
+    null,
+    {
+      kpi_name: string;
+      therapy_area: string;
+      region: string;
+      new_description: string;
+      distribution_model: string;
+      subject_area: string;
+    },
+    null
+  >({
+    method: "PUT",
+    apiRoute: "/api/kpi/editCustomKPI",
+    onSuccess: () => {
+      query.refetchQueries({
+        queryKey: ["kpi"],
       });
     },
   });
