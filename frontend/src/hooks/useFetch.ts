@@ -60,21 +60,4 @@ type useCustomMutationType = {
   body?: object;
   onSuccess?: () => void;
 };
-export function useCustomMutation<T, K>(props: useCustomMutationType) {
-  const query = useMutation({
-    mutationKey: [props.queryKey || props.apiRoute],
-    mutationFn: async ({ mutationBody }: { mutationBody: K }): Promise<T> => {
-      const response = await AxiosClient.axios.post(`${props.apiRoute}`, {
-        ...props.body,
-        ...mutationBody,
-        headers: {
-          authorization: `Bearer ${AxiosClient.accessToken}`,
-        },
-      });
-      return response.data;
-    },
-    onSuccess: props.onSuccess,
-    retry: 1,
-  });
-  return query;
-}
+

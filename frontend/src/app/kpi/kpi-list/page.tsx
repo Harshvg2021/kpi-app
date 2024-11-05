@@ -12,7 +12,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { PencilIcon, SkipBack, Trash2, Upload } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCategories, useGetKPIS } from "@/hooks/fetch/useFetchKPI";
+import {
+  useCategories,
+  useDeleteKPI,
+  useGetKPIS,
+} from "@/hooks/fetch/useFetchKPI";
 import { useEffect, useState } from "react";
 import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 import { useSelectedList } from "@/context/ListProvider";
@@ -42,6 +46,7 @@ const KPIList = () => {
   const router = useRouter();
   const search = useSearchParams();
   const updateSearch = useUpdateSearchParams(true);
+  const deleteKPI = useDeleteKPI();
   const [category, setCategory] = useState<string>("All");
   const { data } = useCategories();
 
@@ -155,7 +160,7 @@ const KPIList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {kpisList.isLoading ? (
+              {kpisList.isLoading || deleteKPI.isPending ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center mx-auto">
                     <Spinner className="mx-auto" />
@@ -208,8 +213,24 @@ const KPIList = () => {
                           This action cannot be undone.
                         </p>
 
-                        <div className="flex gap-2 pt-4">
-                          <Button size={"sm"} variant={"destructive"}>
+                        <PopoverClose className="flex gap-2 pt-4">
+                          <Button
+                            size={"sm"}
+                            variant={"destructive"}
+                            loading={deleteKPI.isPending}
+                            onClick={() => {
+                              deleteKPI.mutate({
+                                mutationBody: {
+                                  distribution_model:
+                                    search.get("distribution")!,
+                                  kpi_name: kpi.title,
+                                  region: search.get("region")!,
+                                  subject_area: search.get("subject")!,
+                                  therapy_area: search.get("therapy")!,
+                                },
+                              });
+                            }}
+                          >
                             Delete
                           </Button>
                           <PopoverClose>
@@ -217,7 +238,7 @@ const KPIList = () => {
                               Cancel
                             </Button>
                           </PopoverClose>
-                        </div>
+                        </PopoverClose>
                       </PopoverContent>
                     </Popover>
                   </TableCell>
