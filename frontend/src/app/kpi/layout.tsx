@@ -11,8 +11,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
   useEffect(() => {
     if (status == "unauthenticated") router.push("/");
-    if (status == "authenticated" && pathName == "/kpi")
-      router.replace("/kpi/therapy");
+    // if (status == "authenticated" && pathName == "/kpi")
+    //   router.replace("/kpi/therapy");
   }, [status, router, pathName]);
   if (status == "loading" || status == "unauthenticated")
     return (

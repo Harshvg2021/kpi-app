@@ -48,7 +48,7 @@ export default function LoginForm() {
   };
 
   useEffect(() => {
-    if (status == "authenticated") router.replace("/kpi/therapy");
+    if (status == "authenticated") router.replace("/kpi");
   }, [status, router]);
 
   if (status === "loading" || status === "authenticated")

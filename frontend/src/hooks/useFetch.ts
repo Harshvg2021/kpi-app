@@ -63,11 +63,7 @@ type useCustomMutationType = {
 export function useCustomMutation<T, K>(props: useCustomMutationType) {
   const query = useMutation({
     mutationKey: [props.queryKey || props.apiRoute],
-    mutationFn: async ({
-      mutationBody,
-    }: {
-      mutationBody: K;
-    }): Promise<T> => {
+    mutationFn: async ({ mutationBody }: { mutationBody: K }): Promise<T> => {
       const response = await AxiosClient.axios.post(`${props.apiRoute}`, {
         ...props.body,
         ...mutationBody,
