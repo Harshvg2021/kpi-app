@@ -8,6 +8,8 @@ const {
   getSubjectAreas,
   addCustomKPI,
   getCategorys,
+  deleteCustomKPI,
+  editCustomKPI
 } = require("../controllers/kpiController");
 const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -22,5 +24,8 @@ router.get("/getRegions", authMiddleware, getRegions);
 router.get("/getSubjectAreas", authMiddleware, getSubjectAreas);
 router.get("/getCategorys",authMiddleware, getCategorys)
 router.post("/addCustomKPI", authMiddleware, addCustomKPI);
+router.delete("/deleteCustomKPI", authMiddleware,deleteCustomKPI);
+router.put("/editCustomKPI", authMiddleware, editCustomKPI)
+
 
 module.exports = router;

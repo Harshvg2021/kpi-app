@@ -216,6 +216,75 @@ const addCustomKPI = async (req, res) => {
   }
 };
 
+
+const deleteCustomKPI = async (req, res) => {
+    try {
+        const { therapy_area, region, distribution_model, subject_area, kpi_name } = req.body;
+		const user_id = req.user.userId
+        const user = await User.findById(user_id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const customKPI = user.customKPIs.find(kpi =>
+            kpi.therapy_area.trim() === therapy_area.trim() &&
+            kpi.region.trim() === region.trim() &&
+            kpi.distribution_model.trim() === distribution_model.trim() &&
+            kpi.subject_area.trim() === subject_area.trim()
+        );
+
+        if (!customKPI) {
+            return res.status(404).json({ message: 'Custom KPI not found' });
+        }
+
+        customKPI.KPIs = customKPI.KPIs.filter(kpi => kpi.name.trim() !== kpi_name.trim());
+
+        await user.save();
+
+        res.status(200).json({ message: 'KPI deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting KPI:', error);
+        res.status(500).json({ message: 'Error deleting KPI', error });
+    }
+};
+
+
+const editCustomKPI = async (req, res) => {
+    try {
+        const { therapy_area, region, distribution_model, subject_area, kpi_name, new_description } = req.body;
+        const user_id = req.user.userId;
+        
+        const user = await User.findById(user_id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const customKPI = user.customKPIs.find(kpi =>
+            kpi.therapy_area.trim() === therapy_area.trim() &&
+            kpi.region.trim() === region.trim() &&
+            kpi.distribution_model.trim() === distribution_model.trim() &&
+            kpi.subject_area.trim() === subject_area.trim()
+        );
+
+        if (!customKPI) {
+            return res.status(404).json({ message: 'Custom KPI not found' });
+        }
+        const kpiToEdit = customKPI.KPIs.find(kpi => kpi.name.trim() === kpi_name.trim());
+
+        if (!kpiToEdit) {
+            return res.status(404).json({ message: 'KPI not found in custom KPIs' });
+        }
+
+        kpiToEdit.description = new_description;
+        await user.save();
+
+        res.status(200).json({ message: 'KPI description updated successfully' });
+    } catch (error) {
+        console.error('Error updating KPI:', error);
+        res.status(500).json({ message: 'Error updating KPI', error });
+    }
+};
+
 module.exports = {
   getKPIs,
   createKPI,
@@ -224,5 +293,7 @@ module.exports = {
   getRegions,
   getSubjectAreas,
   addCustomKPI,
-  getCategorys
+  getCategorys,
+  deleteCustomKPI,
+  editCustomKPI
 };
