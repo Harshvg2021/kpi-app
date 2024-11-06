@@ -22,10 +22,7 @@ model User {
 }
 
 model CustomKPI {
-    id                 String @id @default(auto()) @map("_id") @db.ObjectId
-    distribution_model String
-    subject_area       String
-    therapy_area       String
+    id String @id @default(auto()) @map("_id") @db.ObjectId
 
     region     Region @relation(fields: [regionName], references: [name])
     regionName String
@@ -47,7 +44,7 @@ model CustomKPI {
     user   User   @relation(fields: [userId], references: [id])
     userId String @db.ObjectId
 
-    @@unique([distribution_model, regionName, subject_area, therapy_area])
+    @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
     @@map("custom_kpis")
 }
 
@@ -68,16 +65,13 @@ model CustomKPIList {
     category     Category? @relation(fields: [categoryName], references: [name])
     categoryName String
 
-    @@unique([title, description])
+    @@unique([title, description, categoryName])
     @@map("custom_kpi_lists")
 }
 
 model Kpi {
-    id                 String    @id @default(auto()) @map("_id") @db.ObjectId
-    kpiLists           KpiList[]
-    distribution_model String
-    subject_area       String
-    therapy_area       String
+    id       String    @id @default(auto()) @map("_id") @db.ObjectId
+    kpiLists KpiList[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -94,6 +88,7 @@ model Kpi {
     distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
     distributionModelName String
 
+    @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
     @@map("kpis")
 }
 
@@ -107,6 +102,7 @@ model KpiList {
     category     Category @relation(fields: [categoryName], references: [name])
     categoryName String
 
+    @@unique([title, description, categoryName])
     @@map("kpi_lists")
 }
 
