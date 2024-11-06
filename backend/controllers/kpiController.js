@@ -234,6 +234,8 @@ const deleteCustomKPI = async (req, res) => {
 			kpi.subject_area.trim() === subject_area.trim()
 		);
 
+
+		
 		if (!customKPI) {
 			return res.status(404).json({ message: 'Custom KPI not found' });
 		}

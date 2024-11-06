@@ -1,0 +1,176 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id       String @id @default(auto()) @map("_id") @db.ObjectId
+    email    String @unique()
+    password String
+
+    customKPIs     CustomKPI[]
+    customKPIsList CustomKPIList[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("users")
+}
+
+model CustomKPI {
+    id                 String @id @default(auto()) @map("_id") @db.ObjectId
+    distribution_model String
+    subject_area       String
+    therapy_area       String
+
+    region     Region @relation(fields: [regionName], references: [name])
+    regionName String
+
+    subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+    subjectAreaName String
+
+    therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+    therapyAreaName String
+
+    distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+    distributionModelName String
+
+    kpiLists CustomKPIList[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @db.ObjectId
+
+    @@unique([distribution_model, regionName, subject_area, therapy_area])
+    @@map("custom_kpis")
+}
+
+model CustomKPIList {
+    id          String @id @default(auto()) @map("_id") @db.ObjectId
+    title       String
+    description String
+
+    customKpis   CustomKPI @relation(fields: [customKpisId], references: [id])
+    customKpisId String    @db.ObjectId
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @db.ObjectId
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    category     Category? @relation(fields: [categoryName], references: [name])
+    categoryName String
+
+    @@unique([title, description])
+    @@map("custom_kpi_lists")
+}
+
+model Kpi {
+    id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+    kpiLists           KpiList[]
+    distribution_model String
+    subject_area       String
+    therapy_area       String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    region     Region @relation(fields: [regionName], references: [name])
+    regionName String
+
+    subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+    subjectAreaName String
+
+    therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+    therapyAreaName String
+
+    distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+    distributionModelName String
+
+    @@map("kpis")
+}
+
+model KpiList {
+    id          String @id @default(auto()) @map("_id") @db.ObjectId
+    title       String
+    description String
+    Kpi         Kpi    @relation(fields: [kpiId], references: [id])
+    kpiId       String @db.ObjectId
+
+    category     Category @relation(fields: [categoryName], references: [name])
+    categoryName String
+
+    @@map("kpi_lists")
+}
+
+model Region {
+    id   String @id @default(auto()) @map("_id") @db.ObjectId
+    name String @unique()
+
+    kpi       Kpi[]
+    customKPI CustomKPI[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("regions")
+}
+
+model SubjectArea {
+    id   String @id @default(auto()) @map("_id") @db.ObjectId
+    name String @unique()
+
+    kpi       Kpi[]
+    customKPI CustomKPI[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("subject_areas")
+}
+
+model TherapyArea {
+    id   String @id @default(auto()) @map("_id") @db.ObjectId
+    name String @unique()
+
+    kpi       Kpi[]
+    customKPI CustomKPI[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("therapy_areas")
+}
+
+model DistributionModel {
+    id   String @id @default(auto()) @map("_id") @db.ObjectId
+    name String @unique()
+
+    kpi       Kpi[]
+    customKPI CustomKPI[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("distribution_models")
+}
+
+model Category {
+    id   String @id @default(auto()) @map("_id") @db.ObjectId
+    name String @unique()
+
+    kpiLists       KpiList[]
+    customKpiLists CustomKPIList[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("categories")
+}
