@@ -9,9 +9,11 @@ type useCustomMutationType = {
   body?: object;
   onSuccess?: () => void;
 };
-export function useCustomMutation<T, K, SP extends Record<string, any> | null>(
-  props: useCustomMutationType
-) {
+export function useCustomMutation<
+  T,
+  K,
+  SP extends Record<string, any> | null = null
+>(props: useCustomMutationType) {
   const query = useMutation({
     mutationKey: [props.queryKey || props.apiRoute],
     mutationFn: async ({
@@ -23,7 +25,7 @@ export function useCustomMutation<T, K, SP extends Record<string, any> | null>(
       mutationParams?: string;
       mutationSearchParams?: SP;
     }): Promise<T> => {
-      const search = new URLSearchParams(mutationSearchParams??{});
+      const search = new URLSearchParams(mutationSearchParams ?? {});
       const config: AxiosRequestConfig = {
         method: props.method || "POST",
         url: mutationParams

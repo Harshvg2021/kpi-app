@@ -53,6 +53,7 @@ export const useCreateKPI = (props: GetKPIs) => {
   return useCustomMutation<void, createKPIMutate, null>({
     apiRoute: "/api/kpi/addCustomKPI",
     body: props,
+
     onSuccess: () => {
       client.invalidateQueries({
         queryKey: ["kpi"],
@@ -75,6 +76,7 @@ export const useDeleteKPI = () => {
     null
   >({
     method: "DELETE",
+
     apiRoute: "/api/kpi/deleteCustomKPI",
     onSuccess: () => {
       query.refetchQueries({
@@ -95,8 +97,7 @@ export const useEditCustomKPI = () => {
       new_description: string;
       distribution_model: string;
       subject_area: string;
-    },
-    null
+    }
   >({
     method: "PUT",
     apiRoute: "/api/kpi/editCustomKPI",
