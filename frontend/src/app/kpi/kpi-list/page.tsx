@@ -17,7 +17,7 @@ import {
   useDeleteKPI,
   useGetKPIS,
 } from "@/hooks/fetch/useFetchKPI";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
 import { useSelectedList } from "@/context/ListProvider";
 import { Spinner } from "@/components/custom/Spinner";
@@ -41,6 +41,7 @@ import { Label } from "@/components/ui/label";
 import { DialogDescription } from "@/components/ui/dialog";
 import { PopoverClose } from "@radix-ui/react-popover";
 import UpdateKpi from "./components/UpdateKpi";
+import UploadKpi from "./components/CreateManyKpi";
 
 const KPIList = () => {
   const router = useRouter();
@@ -58,44 +59,74 @@ const KPIList = () => {
     therapy_area: search.get("therapy")!,
   });
 
+  const parsedKpis = useMemo(() => {
+    return [
+      ...(kpisList.data?.data.standardKPI?.kpiLists.map((e) => {
+        return {
+          title: e.title,
+          id: e.id,
+          description: e.description,
+          isCustom: false,
+          category: e.categoryName,
+        };
+      }) ?? []),
+      ...(kpisList.data?.data.customKPI?.kpiLists.map((e) => {
+        return {
+          title: e.title,
+          id: e.id,
+          isCustom: true,
+          description: e.description,
+          category: e.categoryName,
+        };
+      }) ?? []),
+    ];
+  }, [kpisList.data]);
+
   const [KPI, setKPI] = useState<
     {
       title: string;
+      id: string;
       description: string;
       category?: string;
+      isCustom: boolean;
     }[]
   >([]);
 
   useEffect(() => {
     if (kpisList.data) {
-      setKPI(kpisList.data);
+      setKPI([
+        ...(kpisList.data.data.standardKPI?.kpiLists.map((e) => {
+          return {
+            title: e.title,
+            id: e.id,
+            description: e.description,
+            isCustom: false,
+            category: e.categoryName,
+          };
+        }) ?? []),
+        ...(kpisList.data.data.customKPI?.kpiLists.map((e) => {
+          return {
+            title: e.title,
+            id: e.id,
+            description: e.description,
+            isCustom: true,
+            category: e.categoryName,
+          };
+        }) ?? []),
+      ]);
     }
   }, [kpisList.data]);
 
   useEffect(() => {
     if (category !== "All") {
-      setKPI(kpisList.data?.filter((kpi) => kpi.category === category) ?? []);
+      setKPI(parsedKpis?.filter((kpi) => kpi.category === category) ?? []);
     } else {
-      setKPI(kpisList.data ?? []);
+      setKPI(parsedKpis ?? []);
     }
   }, [category]);
 
   const { addToList, removeFromList, selectedList } = useSelectedList();
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      try {
-        const data = await parseExcelFile(file);
-        console.log("Parsed Data:", data);
-        toast.info(JSON.stringify(data));
-      } catch (error) {
-        toast.error("Error parsing file");
-        console.error("Error parsing file:", error);
-      }
-    }
-  };
+
   useEffect(() => {
     if (!search.get("therapy"))
       router.push(`/kpi/therapy1${updateSearch("therapy")}`);
@@ -122,29 +153,15 @@ const KPIList = () => {
               <SelectGroup>
                 <SelectItem value="All">All categories</SelectItem>
                 {data?.map((e) => (
-                  <SelectItem key={e} value={e}>
-                    {e}
+                  <SelectItem key={e.id} value={e.name}>
+                    {e.name}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
           <div className="flex gap-2 items-center">
-            <div>
-              <input
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={handleFileUpload}
-                className="hidden"
-                id="file-upload"
-              />
-
-              <label htmlFor="file-upload">
-                <div className="bg-blue-500 text-white gap-2 items-center flex px-4 py-2 text-sm font-semibold rounded-md cursor-pointer hover:bg-blue-600">
-                  <Upload size={18} /> Upload Excel
-                </div>
-              </label>
-            </div>
+            <UploadKpi />
             <CreateKpi />
           </div>
         </div>
@@ -167,7 +184,7 @@ const KPIList = () => {
                   </TableCell>
                 </TableRow>
               ) : null}
-              {kpisList.data?.length === 0 && (
+              {parsedKpis?.length === 0 && !kpisList.isLoading && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center">
                     No KPIs found
@@ -197,50 +214,53 @@ const KPIList = () => {
                     <p className="line-clamp-6">{kpi.description}</p>
                   </TableCell>
                   <TableCell className="align-top flex ">
-                    <UpdateKpi
-                      defaultTitle={kpi.title}
-                      defaultDescription={kpi.description}
-                    />
-                    <Popover>
-                      <PopoverTrigger>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="max-w-56 space-y-2">
-                        <Label>Are you sure?</Label>
-                        <p className="text-sm ">
-                          This action cannot be undone.
-                        </p>
-
-                        <PopoverClose className="flex gap-2 pt-4">
-                          <Button
-                            size={"sm"}
-                            variant={"destructive"}
-                            loading={deleteKPI.isPending}
-                            onClick={() => {
-                              deleteKPI.mutate({
-                                mutationBody: {
-                                  distribution_model:
-                                    search.get("distribution")!,
-                                  kpi_name: kpi.title,
-                                  region: search.get("region")!,
-                                  subject_area: search.get("subject")!,
-                                  therapy_area: search.get("therapy")!,
-                                },
-                              });
-                            }}
-                          >
-                            Delete
-                          </Button>
-                          <PopoverClose>
-                            <Button size={"sm"} variant={"outline"}>
-                              Cancel
+                    {kpi.isCustom ? (
+                      <>
+                        {" "}
+                        <UpdateKpi
+                          kpiListId={kpi.id}
+                          defaultTitle={kpi.title}
+                          defaultDescription={kpi.description}
+                        />
+                        <Popover>
+                          <PopoverTrigger>
+                            <Button variant="ghost" size="icon">
+                              <Trash2 className="h-4 w-4" />
                             </Button>
-                          </PopoverClose>
-                        </PopoverClose>
-                      </PopoverContent>
-                    </Popover>
+                          </PopoverTrigger>
+                          <PopoverContent className="max-w-56 space-y-2">
+                            <Label>Are you sure?</Label>
+                            <p className="text-sm ">
+                              This action cannot be undone.
+                            </p>
+
+                            <PopoverClose className="flex gap-2 pt-4">
+                              <Button
+                                size={"sm"}
+                                variant={"destructive"}
+                                loading={deleteKPI.isPending}
+                                onClick={() => {
+                                  deleteKPI.mutate({
+                                    mutationBody: {
+                                      KPIListId: kpi.id,
+                                    },
+                                  });
+                                }}
+                              >
+                                Delete
+                              </Button>
+                              <PopoverClose>
+                                <Button size={"sm"} variant={"outline"}>
+                                  Cancel
+                                </Button>
+                              </PopoverClose>
+                            </PopoverClose>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    ) : (
+                      "Standard"
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

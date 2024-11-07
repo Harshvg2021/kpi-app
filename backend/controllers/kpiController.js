@@ -11,7 +11,6 @@ const getKPIs = async (req, res) => {
   const { therapy_area, region, distribution_model, subject_area } = req.body;
   const userId = req.user.userId;
 
-
   try {
     const standardKPI = await prisma.kpi.findFirst({
       where: {
@@ -242,6 +241,77 @@ const addCustomKPI = async (req, res) => {
   }
 };
 
+const addManyCustomKPI = async (req, res) => {
+  const { therapy_area, region, distribution_model, subject_area, kpiList } =
+    req.body;
+
+  if (!Array.isArray(kpiList) || kpiList.length == 0) {
+    return res.status(400).json({ message: "Please provide at least one KPI" });
+  }
+  const userId = req.user.userId;
+  try {
+    const customKPI = await prisma.customKPI.findFirst({
+      where: {
+        regionName: region,
+        subjectAreaName: subject_area,
+        therapyAreaName: therapy_area,
+        distributionModelName: distribution_model,
+        user: {
+          id: userId,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (customKPI?.id) {
+      try {
+        await Promise.all(
+          kpiList.map(async (kpi) => {
+            await prisma.customKPIList.create({
+              data: {
+                userId,
+                title: kpi.kpi_name,
+                description: kpi.kpi_description,
+                customKpisId: customKPI.id,
+              },
+            });
+          })
+        );
+      } catch (error) {}
+    } else {
+      const kpiId = await prisma.customKPI.create({
+        data: {
+          regionName: region,
+          subjectAreaName: subject_area,
+          therapyAreaName: therapy_area,
+          distributionModelName: distribution_model,
+          userId,
+        },
+      });
+      try {
+        await Promise.all(
+          kpiList.map(async (kpi) => {
+            await prisma.customKPIList.create({
+              data: {
+                userId,
+                title: kpi.kpi_name,
+                description: kpi.kpi_description,
+                customKpisId: kpiId.id,
+              },
+            });
+          })
+        );
+      } catch (error) {}
+    }
+    return res.status(200).json({ message: "Successfully created" });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ message: error?.message });
+  }
+};
+
 const deleteCustomKPI = async (req, res) => {
   try {
     const { KPIListId } = req.body;
@@ -290,5 +360,6 @@ export {
   addCustomKPI,
   deleteCustomKPI,
   editCustomKPI,
+  addManyCustomKPI,
   getCategories,
 };

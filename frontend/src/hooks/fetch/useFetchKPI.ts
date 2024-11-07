@@ -3,23 +3,25 @@ import { useFetch, useFetchByPost } from "../useFetch";
 import { useCustomMutation } from "../useCustomMutation";
 
 export const useGetTherapyArea = () => {
-  return useFetch<string[]>("/api/kpi/getTherapyAreas");
+  return useFetch<{ name: string; id: string }[]>("/api/kpi/getTherapyAreas");
 };
 
 export const useGetDistributionModels = () => {
-  return useFetch<string[]>("/api/kpi/getDistributionModels");
+  return useFetch<{ name: string; id: string }[]>(
+    "/api/kpi/getDistributionModels"
+  );
 };
 
 export const useGetRegions = () => {
-  return useFetch<string[]>("/api/kpi/getRegions");
+  return useFetch<{ name: string; id: string }[]>("/api/kpi/getRegions");
 };
 
 export const useSubjectAreas = () => {
-  return useFetch<string[]>("/api/kpi/getSubjectAreas");
+  return useFetch<{ name: string; id: string }[]>("/api/kpi/getSubjectAreas");
 };
 
 export const useCategories = () => {
-  return useFetch<string[]>("/api/kpi/getCategories");
+  return useFetch<{ name: string; id: string }[]>("/api/kpi/getCategories");
 };
 
 export type GetKPIs = {
@@ -29,10 +31,35 @@ export type GetKPIs = {
   subject_area?: string;
 };
 
+export type FetchKPIs = {
+  data: {
+    standardKPI: {
+      kpiLists: {
+        id: string;
+        title: string;
+        description: string;
+        categoryName: string;
+      }[];
+      _count: {
+        kpiLists: number;
+      };
+    } | null;
+    customKPI: {
+      kpiLists: {
+        id: string;
+        title: string;
+        description: string;
+        categoryName: string;
+      }[];
+      _count: {
+        kpiLists: number;
+      };
+    } | null;
+  };
+};
+
 export const useGetKPIS = (props: GetKPIs) => {
-  return useFetchByPost<
-    { title: string; description: string; category?: string }[]
-  >("/api/kpi/getKPIs", "kpi", props);
+  return useFetchByPost<FetchKPIs>("/api/kpi/getKPIs", "kpi", props);
 };
 
 export type CreateKPIs = {
@@ -50,10 +77,23 @@ export type createKPIMutate = {
 export const useCreateKPI = (props: GetKPIs) => {
   const client = useQueryClient();
   const refetch = JSON.stringify(props);
-  return useCustomMutation<void, createKPIMutate, null>({
+  return useCustomMutation<CreateKPIs, createKPIMutate, null>({
     apiRoute: "/api/kpi/addCustomKPI",
     body: props,
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: ["kpi"],
+      });
+    },
+  });
+};
 
+export const useCreateManyKPI = (props: GetKPIs) => {
+  const client = useQueryClient();
+  const refetch = JSON.stringify(props);
+  return useCustomMutation<CreateKPIs, { kpiList: createKPIMutate[] }, null>({
+    apiRoute: "/api/kpi/addManyCustomKPIs",
+    body: props,
     onSuccess: () => {
       client.invalidateQueries({
         queryKey: ["kpi"],
@@ -67,11 +107,7 @@ export const useDeleteKPI = () => {
   return useCustomMutation<
     null,
     {
-      kpi_name: string;
-      therapy_area: string;
-      region: string;
-      distribution_model: string;
-      subject_area: string;
+      KPIListId: string;
     },
     null
   >({
@@ -91,12 +127,9 @@ export const useEditCustomKPI = () => {
   return useCustomMutation<
     null,
     {
-      kpi_name: string;
-      therapy_area: string;
-      region: string;
-      new_description: string;
-      distribution_model: string;
-      subject_area: string;
+      title: string;
+      description: string;
+      kpiListId: string;
     }
   >({
     method: "PUT",

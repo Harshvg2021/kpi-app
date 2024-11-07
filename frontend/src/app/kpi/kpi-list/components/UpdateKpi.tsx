@@ -22,9 +22,11 @@ import { toast } from "sonner";
 const UpdateKpi = ({
   defaultTitle,
   defaultDescription,
+  kpiListId,
 }: {
   defaultTitle: string;
   defaultDescription: string;
+  kpiListId: string;
 }) => {
   const search = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -61,7 +63,6 @@ const UpdateKpi = ({
             </Label>
             <Input
               id="name"
-              disabled
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Please enter kpi name"
@@ -92,12 +93,9 @@ const UpdateKpi = ({
             onClick={async () => {
               const success = await updateKPI.mutateAsync({
                 mutationBody: {
-                  new_description: description,
-                  region: search.get("region")!,
-                  subject_area: search.get("subject")!,
-                  distribution_model: search.get("distribution")!,
-                  therapy_area: search.get("therapy")!,
-                  kpi_name: title,
+                  description: description,
+                  title: title,
+                  kpiListId: kpiListId,
                 },
               });
               // setTitle("");

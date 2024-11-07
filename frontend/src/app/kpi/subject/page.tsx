@@ -85,8 +85,8 @@ const Page: React.FC = () => {
                     </FormControl>
                     <SelectContent>
                       {subject.data?.map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
+                        <SelectItem key={option.name} value={option.name}>
+                          {option.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
