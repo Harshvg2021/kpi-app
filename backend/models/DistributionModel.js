@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const distributionModelSchema = new mongoose.Schema({
     name: {
@@ -8,4 +8,6 @@ const distributionModelSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('DistributionModel', distributionModelSchema);
+const DistributionModel = mongoose.model('DistributionModel', distributionModelSchema);
+
+export default DistributionModel;

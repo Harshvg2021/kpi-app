@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const { jwtSecret } = require('../config/jwt');
+import jwt from 'jsonwebtoken';
+import { jwtSecret } from '../config/jwt.js';
 
 const authMiddleware = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1];
@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
     try {
         const decoded = jwt.verify(token, jwtSecret);
         req.user = decoded;
-        console.log(req.user)
+        console.log(req.user);
         next();
     } catch (error) {
         console.error('Token verification error:', error);
@@ -16,4 +16,4 @@ const authMiddleware = (req, res, next) => {
     }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;
