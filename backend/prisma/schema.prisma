@@ -36,7 +36,6 @@ model CustomKPI {
     distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
     distributionModelName String
 
-
     kpiLists CustomKPIList[]
 
     createdAt DateTime @default(now())
@@ -64,7 +63,7 @@ model CustomKPIList {
     updatedAt DateTime @updatedAt
 
     category     Category? @relation(fields: [categoryName], references: [name])
-    categoryName String @default("Custom")
+    categoryName String    @default("Custom")
 
     @@unique([title, description, categoryName, customKpisId])
     @@map("custom_kpi_lists")
@@ -102,6 +101,9 @@ model KpiList {
 
     category     Category @relation(fields: [categoryName], references: [name])
     categoryName String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     @@unique([title, description, categoryName])
     @@map("kpi_lists")
