@@ -40,14 +40,24 @@ const AxiosClient = {
     }
   },
 
-  // ... Add other methods similarly
-
   getAccessToken: async function () {
     try {
       const iniToken = Cookies.get("kpiUserToken") as string | null;
-      if (iniToken) this.accessToken = iniToken;
-      return iniToken;
+      this.accessToken = iniToken ?? "";
+      const { data } = await this.axios.get(`/api/auth/me`, {
+        headers: {
+          authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+      const { token } = data;
+      this.accessToken = token;
+      Cookies.set("kpiUserToken", token, {
+        expires: 7,
+      });
+      return token;
     } catch (error) {
+      Cookies.remove("kpiUserToken");
+      this.accessToken = "";
       console.log(error);
       return null;
     }
@@ -82,7 +92,7 @@ const AxiosClient = {
           !originalRequest._retry
         ) {
           originalRequest._retry = true;
-          await this.getAccessToken();
+          // await this.getAccessToken();
           originalRequest.headers.Authorization = `Bearer ${this.accessToken}`;
           return this.axios(originalRequest);
         }

@@ -1,5 +1,6 @@
 "use client";
 import AxiosClient from "@/config/axiosClient";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   useEffect,
@@ -54,6 +55,7 @@ export const AuthActions = {
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [auth, authDispatch] = useReducer(reducer, initialAuthState);
+  const router = useRouter();
   useEffect(() => {
     async function autoLogin() {
       const client = AxiosClient;
@@ -61,12 +63,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!response) {
         authDispatch(AuthActions.logout());
         return;
-      }
-      if (response) {
-        authDispatch(AuthActions.login());
-        // router.replace("/dashboard");
       } else {
-        authDispatch(AuthActions.logout());
+        authDispatch(AuthActions.login());
+        router.push("/kpi");
       }
     }
     autoLogin();

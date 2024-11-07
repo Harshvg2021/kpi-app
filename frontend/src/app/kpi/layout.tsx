@@ -14,7 +14,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     // if (status == "authenticated" && pathName == "/kpi")
     //   router.replace("/kpi/therapy");
   }, [status, router, pathName]);
-  if (status == "loading" || status == "unauthenticated")
+  if (status == "loading")
     return (
       <div className="flex h-[94vh] items-center justify-center">
         <Spinner />
