@@ -188,7 +188,9 @@ const addCustomKPI = async (req, res) => {
 				subjectAreaName : subject_area,
 				therapyAreaName : therapy_area,
 				distributionModelName : distribution_model,
-				userId 
+				user :{
+					id : userId
+				}
 			},
 			select :{
 				id : true,
@@ -224,7 +226,7 @@ const addCustomKPI = async (req, res) => {
 				}
 			})
 		}
-		return res.status(200);
+		return res.status(200).json({message : "Succesfully created"});
 
 	}catch(error){
 		return res.status(400).json({message : error?.message});
