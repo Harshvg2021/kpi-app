@@ -12,33 +12,7 @@ const getKPIs = async (req, res) => {
   const userId = req.user.userId;
 
   try {
-    const standardKPI = await prisma.kpi.findFirst({
-      where: {
-        distributionModelName: distribution_model,
-        therapyAreaName: therapy_area,
-        subjectAreaName: subject_area,
-        regionName: region,
-      },
-      select: {
-        _count: {
-          select: {
-            kpiLists: true,
-          },
-        },
-        kpiLists: {
-          select: {
-            id: true,
-            categoryName: true,
-            description: true,
-            title: true,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        },
-      },
-    });
-    const customKPI = await prisma.customKPI.findFirst({
+    let customKPI = await prisma.customKPI.findFirst({
       where: {
         distributionModelName: distribution_model,
         therapyAreaName: therapy_area,
@@ -62,7 +36,70 @@ const getKPIs = async (req, res) => {
         },
       },
     });
-    return res.status(200).json({ data: { standardKPI, customKPI } });
+    if (!customKPI?.kpiLists?.length) {
+      const standardKPI = await prisma.kpi.findFirst({
+        where: {
+          distributionModelName: distribution_model,
+          therapyAreaName: therapy_area,
+          subjectAreaName: subject_area,
+          regionName: region,
+        },
+        select: {
+          kpiLists: {
+            select: {
+              id: true,
+              categoryName: true,
+              description: true,
+              title: true,
+            },
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
+        },
+      });
+
+      if (standardKPI?.kpiLists) {
+        customKPI = await prisma.customKPI.create({
+          data: {
+            distributionModelName: distribution_model,
+            therapyAreaName: therapy_area,
+            subjectAreaName: subject_area,
+            regionName: region,
+            userId: userId,
+            kpiLists: {
+              createMany: {
+                data: standardKPI.kpiLists.map((e) => {
+                  return {
+                    title: e.title,
+                    description: e.description,
+                    categoryName: e.categoryName,
+                    userId: userId,
+                  };
+                }),
+              },
+            },
+          },
+          select: {
+            _count: {
+              select: {
+                kpiLists: true,
+              },
+            },
+            kpiLists: {
+              select: {
+                id: true,
+                categoryName: true,
+                description: true,
+                title: true,
+              },
+            },
+          },
+        });
+      }
+    }
+
+    return res.status(200).json({ data: { customKPI } });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: error?.message });

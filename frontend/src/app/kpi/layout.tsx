@@ -10,7 +10,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathName = usePathname();
   useEffect(() => {
-    if (status == "unauthenticated") router.push("/");
+    if (status !== "loading" && status === "unauthenticated") router.push("/");
     // if (status == "authenticated" && pathName == "/kpi")
     //   router.replace("/kpi/therapy");
   }, [status, router, pathName]);

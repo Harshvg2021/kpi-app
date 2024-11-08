@@ -33,17 +33,6 @@ export type GetKPIs = {
 
 export type FetchKPIs = {
   data: {
-    standardKPI: {
-      kpiLists: {
-        id: string;
-        title: string;
-        description: string;
-        categoryName: string;
-      }[];
-      _count: {
-        kpiLists: number;
-      };
-    } | null;
     customKPI: {
       kpiLists: {
         id: string;
@@ -59,7 +48,11 @@ export type FetchKPIs = {
 };
 
 export const useGetKPIS = (props: GetKPIs) => {
-  return useFetchByPost<FetchKPIs>("/api/kpi/getKPIs", "kpi", props);
+  return useFetchByPost<FetchKPIs>(
+    "/api/kpi/getKPIs",
+    ["kpi", JSON.stringify(props)],
+    props
+  );
 };
 
 export type CreateKPIs = {

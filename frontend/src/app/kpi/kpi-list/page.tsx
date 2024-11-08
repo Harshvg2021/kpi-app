@@ -61,15 +61,6 @@ const KPIList = () => {
 
   const parsedKpis = useMemo(() => {
     return [
-      ...(kpisList.data?.data.standardKPI?.kpiLists.map((e) => {
-        return {
-          title: e.title,
-          id: e.id,
-          description: e.description,
-          isCustom: false,
-          category: e.categoryName,
-        };
-      }) ?? []),
       ...(kpisList.data?.data.customKPI?.kpiLists.map((e) => {
         return {
           title: e.title,
@@ -95,15 +86,6 @@ const KPIList = () => {
   useEffect(() => {
     if (kpisList.data) {
       setKPI([
-        ...(kpisList.data.data.standardKPI?.kpiLists.map((e) => {
-          return {
-            title: e.title,
-            id: e.id,
-            description: e.description,
-            isCustom: false,
-            category: e.categoryName,
-          };
-        }) ?? []),
         ...(kpisList.data.data.customKPI?.kpiLists.map((e) => {
           return {
             title: e.title,
@@ -140,7 +122,7 @@ const KPIList = () => {
 
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
-      <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col gap-4 mx-auto max-h-[90vh]">
+      <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col min-h-[90vh]  gap-4 mx-auto max-h-[90vh]">
         <div className="flex md:justify-between flex-col md:flex-row items-center">
           <h1 className="text-2xl font-bold">
             KPI List - {search.get("subject")}
@@ -166,7 +148,7 @@ const KPIList = () => {
           </div>
         </div>
 
-        <div className="rounded-lg border max-h-[70vh] min-h-[70vh] w-full overflow-y-auto bg-white shadow">
+        <div className="rounded-lg border max-h-[70vh] min-h-full flex-grow w-full overflow-y-auto bg-white shadow">
           <Table>
             <TableHeader className="bg-white rounded-t-md z-10">
               <TableRow>

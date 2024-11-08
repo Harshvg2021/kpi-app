@@ -31,12 +31,12 @@ export function useFetch<T>(apiRoute: string, queryKey?: string) {
 
 export function useFetchByPost<T>(
   apiRoute: string,
-  queryKey?: string,
+  queryKey?: string[],
   body?: object
 ) {
   const { status } = useSession();
   const query = useQuery({
-    queryKey: [queryKey || apiRoute],
+    queryKey: queryKey || [apiRoute],
     queryFn: async (): Promise<T> => {
       const response = await AxiosClient.axios.post(`${apiRoute}`, {
         ...body,

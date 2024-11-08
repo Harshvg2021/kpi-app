@@ -65,7 +65,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         return;
       } else {
         authDispatch(AuthActions.login());
-        router.push("/kpi");
       }
     }
     autoLogin();
