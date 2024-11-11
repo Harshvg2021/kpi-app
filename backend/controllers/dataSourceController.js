@@ -19,6 +19,7 @@ const getDataSources = async (req, res) => {
             createdAt: true,
             updatedAt: true,
             name: true,
+            vendorList: true,
             description: true,
           },
           orderBy: {
@@ -27,10 +28,6 @@ const getDataSources = async (req, res) => {
         },
       },
     });
-
-    if (!dataSources.length) {
-      return res.status(200).json([]);
-    }
 
     res.status(200).json(dataSources);
   } catch (error) {
@@ -49,14 +46,14 @@ const getVendorList = async (req, res) => {
         dataSourceId: dataSourceId,
       },
       select: {
-        venderList: true,
+        vendorList: true,
       },
     });
 
     if (!vendorList.length) {
       return res
         .status(404)
-        .json({ message: "No vender list found for the specified criteria." });
+        .json({ message: "No vendor list found for the specified criteria." });
     }
 
     res.status(200).json(vendorList);

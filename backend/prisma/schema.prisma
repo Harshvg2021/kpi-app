@@ -213,7 +213,7 @@ model DataSourceItem {
   name        String
   description String
 
-  venderList String[]
+  vendorList String[]
 
   @@map("data_source_items")
 }

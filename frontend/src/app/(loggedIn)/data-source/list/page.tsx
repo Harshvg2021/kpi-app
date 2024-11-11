@@ -25,6 +25,7 @@ import { useOnboarding } from "@/context/OnboardingProvider";
 import { useGetDataSource } from "@/hooks/fetch/useFetchDataSource";
 import { useDataSourceList } from "@/context/DataSourceProvider";
 import { Checkbox } from "@/components/ui/checkbox";
+import Vendors from "./components/Vendors";
 
 const DataSourceList = () => {
   const router = useRouter();
@@ -48,12 +49,13 @@ const DataSourceList = () => {
 
   const parsedKpis = useMemo(() => {
     return (
-      dataSourceList.data?.items.map((e) => {
+      dataSourceList.data?.items?.map((e) => {
         return {
           id: e.id,
           name: e.name,
           description: e.description,
           createdAt: e.createdAt,
+          vendor: e.vendorList || [],
         };
       }) ?? []
     );
@@ -64,6 +66,7 @@ const DataSourceList = () => {
       name: string;
       id: string;
       description: string;
+      vendor: string[];
       createdAt?: Date;
     }[]
   >([]);
@@ -71,12 +74,13 @@ const DataSourceList = () => {
   useEffect(() => {
     if (dataSourceList.data) {
       setDatasource([
-        ...(dataSourceList.data.items.map((e) => {
+        ...(dataSourceList.data.items?.map((e) => {
           return {
             id: e.id,
             description: e.description,
             name: e.name,
             createdAt: e.createdAt,
+            vendor: e.vendorList || [],
           };
         }) ?? []),
       ]);
@@ -115,7 +119,6 @@ const DataSourceList = () => {
                 <TableHead></TableHead>
                 <TableHead>Data Source</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead className="w-24">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,39 +136,13 @@ const DataSourceList = () => {
                   </TableCell>
                 </TableRow>
               )}
-              {datasource.map((kpi, index) => (
-                <TableRow key={index} className="align-top even:bg-blue-50">
-                  <TableCell className="align-top">
-                    <div className="flex items-start">
-                      <Checkbox
-                        checked={selectedList.includes({
-                          description: kpi.description,
-                          title: kpi.name,
-                        })}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            addToList({
-                              description: kpi.description,
-                              title: kpi.name,
-                            });
-                          } else {
-                            removeFromList({
-                              description: kpi.description,
-                              title: kpi.name,
-                            });
-                          }
-                        }}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium align-top">
-                    <p className="flex items-start text-nowrap">{kpi.name}</p>
-                  </TableCell>
-                  <TableCell className="align-top">
-                    <p className="line-clamp-6">{kpi.description}</p>
-                  </TableCell>
-                  <TableCell className="align-top flex "></TableCell>
-                </TableRow>
+              {datasource.map((dataSource, index) => (
+                <Vendors
+                  key={index}
+                  vendor={dataSource.vendor}
+                  description={dataSource.description}
+                  name={dataSource.name}
+                />
               ))}
             </TableBody>
           </Table>
