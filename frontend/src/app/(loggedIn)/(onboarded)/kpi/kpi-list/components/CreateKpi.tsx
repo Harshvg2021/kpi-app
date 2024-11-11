@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useKpiList } from "@/context/KpiProvider";
+import { useOnboarding } from "@/context/OnboardingProvider";
 import { useCreateKPI } from "@/hooks/fetch/useFetchKPI";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
@@ -21,12 +23,13 @@ import { toast } from "sonner";
 const CreateKpi = () => {
   const search = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const { options } = useKpiList();
+  const { selectedOnboarding } = useOnboarding();
   const createKpi = useCreateKPI({
-    distribution_model: search.get("distribution")!,
-    region: search.get("region")!,
-    subject_area: search.get("subject")!,
-    therapy_area: search.get("therapy")!,
+    distribution_model: selectedOnboarding?.distributionModel,
+    region: selectedOnboarding?.region,
+    subject_area: options?.subjectArea,
+    therapy_area: selectedOnboarding?.therapyArea,
   });
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");

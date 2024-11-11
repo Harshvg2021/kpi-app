@@ -109,7 +109,7 @@ const KPIList = () => {
   const { addToList, removeFromList, selectedList } = useKpiList();
 
   return (
-    <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
+    <div className="">
       <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col min-h-[90vh]  gap-4 mx-auto max-h-[90vh]">
         <div className="flex md:justify-between flex-col md:flex-row items-center">
           <h1 className="text-2xl font-bold">

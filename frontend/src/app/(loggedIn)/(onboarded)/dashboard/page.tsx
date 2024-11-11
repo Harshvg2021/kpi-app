@@ -17,7 +17,7 @@ import Link from "next/link";
 const LinkGenerate = ({ href, text }: { href?: string; text: string }) => {
   return (
     <Link
-      href={href ?? "/kpi"}
+      href={href ?? "/kpi/subject"}
       className="hover:text-blue-100 relative col-span-4 h-[200px] grid place-content-center overflow-hidden shadow-xl shadow-blue-300  bg-blue-600 text-white py-2 px-2 rounded-md"
     >
       <Image

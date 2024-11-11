@@ -19,6 +19,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useKpiList } from "@/context/KpiProvider";
+import { useOnboarding } from "@/context/OnboardingProvider";
 import { useCreateKPI, useCreateManyKPI } from "@/hooks/fetch/useFetchKPI";
 import { parseExcelFile } from "@/lib/convertor";
 import { Paperclip, Upload } from "lucide-react";
@@ -36,11 +38,13 @@ const UploadKpi = () => {
       description: string;
     }[]
   >([]);
+  const { selectedOnboarding  } = useOnboarding();
+  const { options } = useKpiList();
   const createKpi = useCreateManyKPI({
-    distribution_model: search.get("distribution")!,
-    region: search.get("region")!,
-    subject_area: search.get("subject")!,
-    therapy_area: search.get("therapy")!,
+    distribution_model: selectedOnboarding?.distributionModel,
+    region: selectedOnboarding?.region,
+    subject_area: options?.subjectArea,
+    therapy_area: selectedOnboarding?.therapyArea,
   });
   const handleFileUpload = async (file: File) => {
     if (file) {
