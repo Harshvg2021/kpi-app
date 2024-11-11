@@ -1,175 +1,219 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-    id       String @id @default(auto()) @map("_id") @db.ObjectId
-    email    String @unique()
-    password String
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  email    String @unique()
+  password String
 
-    customKPIs     CustomKPI[]
-    customKPIsList CustomKPIList[]
+  customKPIs     CustomKPI[]
+  customKPIsList CustomKPIList[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@map("users")
+  @@map("users")
 }
 
 model CustomKPI {
-    id String @id @default(auto()) @map("_id") @db.ObjectId
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-    region     Region @relation(fields: [regionName], references: [name])
-    regionName String
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
 
-    subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
-    subjectAreaName String
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
 
-    therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
-    therapyAreaName String
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
 
-    distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
-    distributionModelName String
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
 
-    kpiLists CustomKPIList[]
+  kpiLists CustomKPIList[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    user   User   @relation(fields: [userId], references: [id])
-    userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
 
-    @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName, userId])
-    @@map("custom_kpis")
+  @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName, userId])
+  @@map("custom_kpis")
 }
 
 model CustomKPIList {
-    id          String @id @default(auto()) @map("_id") @db.ObjectId
-    title       String
-    description String
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
 
-    customKpis   CustomKPI @relation(fields: [customKpisId], references: [id])
-    customKpisId String    @db.ObjectId
+  customKpis   CustomKPI @relation(fields: [customKpisId], references: [id])
+  customKpisId String    @db.ObjectId
 
-    user   User   @relation(fields: [userId], references: [id])
-    userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    category     Category? @relation(fields: [categoryName], references: [name])
-    categoryName String    @default("Custom")
+  category     Category? @relation(fields: [categoryName], references: [name])
+  categoryName String    @default("Custom")
 
-    @@unique([title, description, categoryName, customKpisId])
-    @@map("custom_kpi_lists")
+  @@unique([title, description, categoryName, customKpisId])
+  @@map("custom_kpi_lists")
 }
 
 model Kpi {
-    id       String    @id @default(auto()) @map("_id") @db.ObjectId
-    kpiLists KpiList[]
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  kpiLists KpiList[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    region     Region @relation(fields: [regionName], references: [name])
-    regionName String
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
 
-    subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
-    subjectAreaName String
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
 
-    therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
-    therapyAreaName String
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
 
-    distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
-    distributionModelName String
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
 
-    @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
-    @@map("kpis")
+  @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
+  @@map("kpis")
 }
 
 model KpiList {
-    id          String @id @default(auto()) @map("_id") @db.ObjectId
-    title       String
-    description String
-    Kpi         Kpi    @relation(fields: [kpiId], references: [id])
-    kpiId       String @db.ObjectId
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  Kpi         Kpi    @relation(fields: [kpiId], references: [id])
+  kpiId       String @db.ObjectId
 
-    category     Category @relation(fields: [categoryName], references: [name])
-    categoryName String
+  category     Category @relation(fields: [categoryName], references: [name])
+  categoryName String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@unique([title, description, categoryName])
-    @@map("kpi_lists")
+  @@unique([title, description, categoryName])
+  @@map("kpi_lists")
 }
 
 model Region {
-    id   String @id @default(auto()) @map("_id") @db.ObjectId
-    name String @unique()
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
 
-    kpi       Kpi[]
-    customKPI CustomKPI[]
+  kpi       Kpi[]
+  customKPI CustomKPI[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  DataSource DataSource[]
 
-    @@map("regions")
+  @@map("regions")
 }
 
 model SubjectArea {
-    id   String @id @default(auto()) @map("_id") @db.ObjectId
-    name String @unique()
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
 
-    kpi       Kpi[]
-    customKPI CustomKPI[]
+  kpi       Kpi[]
+  customKPI CustomKPI[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  DataSource DataSource[]
 
-    @@map("subject_areas")
+  @@map("subject_areas")
 }
 
 model TherapyArea {
-    id   String @id @default(auto()) @map("_id") @db.ObjectId
-    name String @unique()
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
 
-    kpi       Kpi[]
-    customKPI CustomKPI[]
+  kpi       Kpi[]
+  customKPI CustomKPI[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  DataSource DataSource[]
 
-    @@map("therapy_areas")
+  @@map("therapy_areas")
 }
 
 model DistributionModel {
-    id   String @id @default(auto()) @map("_id") @db.ObjectId
-    name String @unique()
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
 
-    kpi       Kpi[]
-    customKPI CustomKPI[]
+  kpi       Kpi[]
+  customKPI CustomKPI[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  DataSource DataSource[]
 
-    @@map("distribution_models")
+  @@map("distribution_models")
 }
 
 model Category {
-    id   String @id @default(auto()) @map("_id") @db.ObjectId
-    name String @unique()
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
 
-    kpiLists       KpiList[]
-    customKpiLists CustomKPIList[]
+  kpiLists       KpiList[]
+  customKpiLists CustomKPIList[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    @@map("categories")
+  @@map("categories")
+}
+
+model DataSource {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
+
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
+
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
+
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
+
+  items DataSourceItem[]
+
+  @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
+  @@map("data_sources")
+}
+
+model DataSourceItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  DataSource   DataSource @relation(fields: [dataSourceId], references: [id])
+  dataSourceId String     @db.ObjectId
+
+  name        String
+  description String
+
+  venderList String[]
+
+  @@map("data_source_items")
 }

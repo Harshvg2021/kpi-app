@@ -2,12 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import kpiRoutes from "./routes/kpiRoutes.js";
+import dataSourceRoutes from "./routes/dataSourceRoutes.js"
 import cors from "cors";
 import dotenv from "dotenv";
 import authMiddleware from "./middleware/authMiddleware.js";
 
 dotenv.config();
-
 
 const app = express();
 app.use(express.json());
@@ -36,6 +36,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api/kpi", authMiddleware,kpiRoutes);
+app.use("/api/datasource/", authMiddleware,dataSourceRoutes);
 
 const PORT = process.env.PORT || 5454;
 app.listen(PORT, () => {
