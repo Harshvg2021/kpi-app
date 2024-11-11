@@ -4,29 +4,32 @@ const getDataSources = async (req, res) => {
   const { subjectArea, distributionModel, therapyArea, region } = req.body;
 
   try {
-    const dataSources = await prisma.dataSource.findMany({
+    const dataSources = await prisma.dataSource.findFirst({
       where: {
         subjectAreaName: subjectArea,
         distributionModelName: distributionModel,
         therapyAreaName: therapyArea,
         regionName: region,
       },
-      include: {
-
+      select: {
         id: true,
         items: {
-            select :{
-                name : true,
-                description : true
-            }
+          select: {
+            id: true,
+            createdAt: true,
+            updatedAt: true,
+            name: true,
+            description: true,
+          },
+          orderBy: {
+            updatedAt: "desc",
+          },
         },
       },
     });
 
     if (!dataSources.length) {
-      return res
-        .status(404)
-        .json({ message: "No DataSources found for the specified criteria." });
+      return res.status(200).json([]);
     }
 
     res.status(200).json(dataSources);
@@ -38,30 +41,29 @@ const getDataSources = async (req, res) => {
   }
 };
 
+const getVendorList = async (req, res) => {
+  try {
+    const { dataSourceId } = req.body;
+    const vendorList = await prisma.dataSourceItem.findUnique({
+      where: {
+        dataSourceId: dataSourceId,
+      },
+      select: {
+        venderList: true,
+      },
+    });
 
-const getVendorList = async (req,res) => {
-    try{
-        const {dataSourceId } = req.body;
-        const vendorList = await prisma.dataSourceItem.findUnique({
-            where : {
-                dataSourceId : dataSourceId
-            },
-            include : {
-                venderList : true
-            }
-        });
-
-        if(!vendorList.length){
-            return res.status(404).
-                json({ message: "No vender list found for the specified criteria." });
-        }
-
-        res.status(200).json(vendorList);
-
-    }catch (error){
-        console.log("Error getting vendor list ", error.message);
-        res.status(500).json({message: error.message})
+    if (!vendorList.length) {
+      return res
+        .status(404)
+        .json({ message: "No vender list found for the specified criteria." });
     }
-} ;
 
-export  { getDataSources,getVendorList };
+    res.status(200).json(vendorList);
+  } catch (error) {
+    console.log("Error getting vendor list ", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export { getDataSources, getVendorList };
