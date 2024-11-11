@@ -32,7 +32,7 @@ const Page: React.FC = () => {
   const { selectSubjectArea } = useDataSourceList();
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     selectSubjectArea(data.subject);
-    router.push(`/kpi/kpi-list`);
+    router.push(`/data-source/list`);
   };
 
   return (
