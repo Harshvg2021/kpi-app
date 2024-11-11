@@ -16,8 +16,6 @@ const getDataSources = async (req, res) => {
         items: {
           select: {
             id: true,
-            createdAt: true,
-            updatedAt: true,
             name: true,
             description: true,
           },
@@ -27,9 +25,9 @@ const getDataSources = async (req, res) => {
         },
       },
     });
-
-    if (!dataSources.length) {
-      return res.status(200).json([]);
+    console.log(dataSources)
+    if (!dataSources) {
+      return res.status(400).json({message : "no data source found!"});
     }
 
     res.status(200).json(dataSources);
@@ -43,17 +41,17 @@ const getDataSources = async (req, res) => {
 
 const getVendorList = async (req, res) => {
   try {
-    const { dataSourceId } = req.body;
+    const { dataSourceItemId } = req.body;
     const vendorList = await prisma.dataSourceItem.findUnique({
       where: {
-        dataSourceId: dataSourceId,
+        id: dataSourceItemId,
       },
       select: {
         venderList: true,
       },
     });
-
-    if (!vendorList.length) {
+    console.log(vendorList)
+    if (!vendorList) {
       return res
         .status(404)
         .json({ message: "No vender list found for the specified criteria." });
