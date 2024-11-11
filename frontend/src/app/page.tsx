@@ -48,7 +48,7 @@ export default function LoginForm() {
   };
 
   useEffect(() => {
-    if (status == "authenticated") router.replace("/kpi");
+    if (status == "authenticated") router.replace("/onboarding");
   }, [status, router]);
 
   if (status === "loading" || status === "authenticated")

@@ -16,16 +16,16 @@ import {
   exportToPDF,
   exportToPowerPoint,
 } from "@/lib/convertor";
-import { useSelectedList } from "@/context/ListProvider";
+import { useKpiList } from "@/context/KpiProvider";
 
 const Page = () => {
   const router = useRouter();
-  const { selectedList } = useSelectedList();
+  const { selectedList } = useKpiList();
   const [isExporting, setIsExporting] = useState(false);
   const search = useSearchParams();
   useEffect(() => {
     if (selectedList.length === 0) {
-      router.push("/kpi/therapy");
+      router.push("/kpi/kpi-list");
     }
   }, [selectedList, router]);
 
@@ -57,8 +57,8 @@ const Page = () => {
   };
 
   return (
-    <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
-      <Card className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="">
+      <Card className="w-full max-w-4xl min-w-[80vw] flex flex-col h-full min-h-[80vh] mx-auto p-6 bg-white rounded-lg shadow-lg">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Summary</h1>
           <button className="text-gray-500 hover:text-gray-700">
@@ -66,7 +66,7 @@ const Page = () => {
           </button>
         </div>
 
-        <Table>
+        <Table className="grow h-full">
           <TableBody>
             {selectedList.map((kpi, index) => (
               <TableRow key={index} className="hover:bg-gray-50">
@@ -79,7 +79,7 @@ const Page = () => {
           </TableBody>
         </Table>
 
-        <div className="flex justify-end items-center gap-4 mt-6">
+        <div className="flex self-end justify-end items-center gap-4 mt-6">
           <Button
             onClick={() => router.push(`/kpi/kpi-list?${search.toString()}`)}
             variant="outline"

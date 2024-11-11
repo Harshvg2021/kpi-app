@@ -10,11 +10,10 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useSubjectAreas } from "@/hooks/fetch/useFetchKPI";
-import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
-import { useEffect } from "react";
+import { useKpiList } from "@/context/KpiProvider";
 
 const schema = z.object({
   subject: z.string({ message: "Please select a region" }),
@@ -29,25 +28,15 @@ const Page: React.FC = () => {
     mode: "onChange",
     // disabled: region.isLoading || region.isPending,
   });
-  const search = useSearchParams();
   const router = useRouter();
-  const updateSearch = useUpdateSearchParams(true);
+  const { selectSubjectArea } = useKpiList();
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
-    const path = updateSearch("subject", data.subject);
-    router.push(`/kpi/kpi-list${path}`);
+    selectSubjectArea(data.subject);
+    router.push(`/kpi/kpi-list`);
   };
 
-  useEffect(() => {
-    if (!search.get("therapy"))
-      router.push(`/kpi/therapy${updateSearch("therapy")}`);
-    if (!search.get("region"))
-      router.push(`/kpi/region${updateSearch("region")}`);
-    if (!search.get("distribution"))
-      router.push(`/kpi/distribution${updateSearch("distribution")}`);
-  }, [search, router, updateSearch]);
-
   return (
-    <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
+    <div className="">
       <div className="bg-white shadow-lg space-y-4 rounded-3xl p-8 max-w-md w-full ">
         {/* Step Indicator */}
         <div className="mb-6 flex justify-center space-x-2">
@@ -98,11 +87,7 @@ const Page: React.FC = () => {
             {/* Navigation Buttons */}
             <div className="flex justify-end gap-2 mt-6">
               <Button
-                onClick={() =>
-                  router.push(
-                    `/kpi/distribution${updateSearch("distribution")}`
-                  )
-                }
+                onClick={() => router.push(`/dashboard`)}
                 type="button"
                 className="bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-md py-2 px-4"
               >

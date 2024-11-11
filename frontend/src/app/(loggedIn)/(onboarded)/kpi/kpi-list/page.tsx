@@ -9,26 +9,22 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PencilIcon, SkipBack, Trash2, Upload } from "lucide-react";
+import { SkipBack, Trash2 } from "lucide-react";
 import CreateKpi from "./components/CreateKpi";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   useCategories,
   useDeleteKPI,
   useGetKPIS,
 } from "@/hooks/fetch/useFetchKPI";
 import { useEffect, useMemo, useState } from "react";
-import useUpdateSearchParams from "@/hooks/useUpdateSearchParams";
-import { useSelectedList } from "@/context/ListProvider";
+import { useKpiList } from "@/context/KpiProvider";
 import { Spinner } from "@/components/custom/Spinner";
-import { parseExcelFile } from "@/lib/convertor";
-import { toast } from "sonner";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -38,26 +34,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { DialogDescription } from "@/components/ui/dialog";
 import { PopoverClose } from "@radix-ui/react-popover";
 import UpdateKpi from "./components/UpdateKpi";
 import UploadKpi from "./components/CreateManyKpi";
+import { useOnboarding } from "@/context/OnboardingProvider";
 
 const KPIList = () => {
   const router = useRouter();
-  const search = useSearchParams();
-  const updateSearch = useUpdateSearchParams(true);
   const deleteKPI = useDeleteKPI();
   const [category, setCategory] = useState<string>("All");
   const { data } = useCategories();
 
-  // Fetch KPIs based on search parameters
+  const { selectedOnboarding } = useOnboarding();
+  const { options } = useKpiList();
+
   const kpisList = useGetKPIS({
-    distribution_model: search.get("distribution")!,
-    region: search.get("region")!,
-    subject_area: search.get("subject")!,
-    therapy_area: search.get("therapy")!,
+    distribution_model: selectedOnboarding?.distributionModel,
+    region: selectedOnboarding?.region,
+    subject_area: options?.subjectArea,
+    therapy_area: selectedOnboarding?.therapyArea,
   });
+  useEffect(() => {
+    if (!options?.subjectArea) router.push("/kpi/subject");
+  }, [options?.subjectArea]);
 
   const parsedKpis = useMemo(() => {
     return [
@@ -107,25 +106,14 @@ const KPIList = () => {
     }
   }, [category]);
 
-  const { addToList, removeFromList, selectedList } = useSelectedList();
-
-  useEffect(() => {
-    if (!search.get("therapy"))
-      router.push(`/kpi/therapy1${updateSearch("therapy")}`);
-    if (!search.get("region"))
-      router.push(`/kpi/region${updateSearch("region")}`);
-    if (!search.get("distribution"))
-      router.push(`/kpi/distribution${updateSearch("distribution")}`);
-    if (!search.get("subject"))
-      router.push(`/kpi/subject${updateSearch("subject")}`);
-  }, [search, router, updateSearch]);
+  const { addToList, removeFromList, selectedList } = useKpiList();
 
   return (
     <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
       <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col min-h-[90vh]  gap-4 mx-auto max-h-[90vh]">
         <div className="flex md:justify-between flex-col md:flex-row items-center">
           <h1 className="text-2xl font-bold">
-            KPI List - {search.get("subject")}
+            KPI List - {options?.subjectArea}
           </h1>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-[180px]">
@@ -252,14 +240,14 @@ const KPIList = () => {
 
         <div className="flex justify-center gap-4">
           <Button
-            onClick={() => router.push(`/kpi/subject?${search.toString()}`)}
+            onClick={() => router.push(`/kpi/subject`)}
             icon={<SkipBack size={12} />}
             className="bg-blue-900 hover:bg-blue-800 "
           >
             Back
           </Button>
           <Button
-            onClick={() => router.push(`/kpi/summary?${search.toString()}`)}
+            onClick={() => router.push(`/kpi/summary`)}
             disabled={selectedList.length === 0}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >
