@@ -2,7 +2,7 @@ import { useLocalStorage } from "@/hooks/usePersistenceStorage";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { string } from "zod";
 
-type DataSourceType = { title: string; description: string };
+type DataSourceType = { name: string; description: string };
 
 interface SelectedListContextType {
   selectedList: DataSourceType[];
@@ -40,7 +40,7 @@ export const SelectedDataSourceListProvider: React.FC<{ children: ReactNode }> =
 
   const removeFromList = (kpi: DataSourceType) => {
     setSelectedList((prevList) =>
-      prevList.filter((item) => item.title !== kpi.title)
+      prevList.filter((item) => item.name !== kpi.name)
     );
   };
 

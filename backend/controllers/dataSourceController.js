@@ -17,6 +17,7 @@ const getDataSources = async (req, res) => {
           select: {
             id: true,
             name: true,
+            vendorList: true,
             description: true,
           },
           orderBy: {
@@ -25,10 +26,6 @@ const getDataSources = async (req, res) => {
         },
       },
     });
-    console.log(dataSources)
-    if (!dataSources) {
-      return res.status(400).json({message : "no data source found!"});
-    }
 
     res.status(200).json(dataSources);
   } catch (error) {
@@ -47,14 +44,14 @@ const getVendorList = async (req, res) => {
         id: dataSourceItemId,
       },
       select: {
-        venderList: true,
+        vendorList: true,
       },
     });
     console.log(vendorList)
     if (!vendorList) {
       return res
         .status(404)
-        .json({ message: "No vender list found for the specified criteria." });
+        .json({ message: "No vendor list found for the specified criteria." });
     }
 
     res.status(200).json(vendorList);

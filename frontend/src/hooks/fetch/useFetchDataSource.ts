@@ -9,13 +9,16 @@ export type GetDataSource = {
 
 export type DataSourceResponse = {
   id: string;
-  items: {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    name: string;
-    description: string;
-  }[];
+  items:
+    | {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        description: string;
+        vendorList: string[] | null;
+      }[]
+    | null;
 } | null;
 export const useGetDataSource = (props: GetDataSource) => {
   return useFetchByPost<DataSourceResponse>(
