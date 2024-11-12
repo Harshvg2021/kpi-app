@@ -2,10 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/authRoutes.js";
 import kpiRoutes from "./routes/kpiRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js"
 import dataSourceRoutes from "./routes/dataSourceRoutes.js"
 import cors from "cors";
 import dotenv from "dotenv";
 import authMiddleware from "./middleware/authMiddleware.js";
+
 
 dotenv.config();
 
@@ -37,7 +39,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/kpi", authMiddleware,kpiRoutes);
 app.use("/api/datasource/", authMiddleware,dataSourceRoutes);
-
+app.use("/api/reports",reportRoutes)
 const PORT = process.env.PORT || 5454;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

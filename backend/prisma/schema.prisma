@@ -15,8 +15,9 @@ model User {
   customKPIs     CustomKPI[]
   customKPIsList CustomKPIList[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  CustomReport CustomReport[]
 
   @@map("users")
 }
@@ -116,9 +117,11 @@ model Region {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  DataSource DataSource[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  DataSource     DataSource[]
+  StandardReport StandardReport[]
+  CustomReport   CustomReport[]
 
   @@map("regions")
 }
@@ -130,9 +133,11 @@ model SubjectArea {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  DataSource DataSource[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  DataSource     DataSource[]
+  StandardReport StandardReport[]
+  CustomReport   CustomReport[]
 
   @@map("subject_areas")
 }
@@ -144,9 +149,11 @@ model TherapyArea {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  DataSource DataSource[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  DataSource     DataSource[]
+  StandardReport StandardReport[]
+  CustomReport   CustomReport[]
 
   @@map("therapy_areas")
 }
@@ -158,9 +165,11 @@ model DistributionModel {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  DataSource DataSource[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  DataSource     DataSource[]
+  StandardReport StandardReport[]
+  CustomReport   CustomReport[]
 
   @@map("distribution_models")
 }
@@ -216,4 +225,55 @@ model DataSourceItem {
   venderList String[]
 
   @@map("data_source_items")
+}
+
+model StandardReport {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    String
+  description String
+
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
+
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
+
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
+
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("standard_reports")
+}
+
+model CustomReport {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    String
+  description String
+
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
+
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
+
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
+
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("custom_reports")
 }
