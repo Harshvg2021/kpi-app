@@ -7,7 +7,7 @@ import dataSourceRoutes from "./routes/dataSourceRoutes.js"
 import cors from "cors";
 import dotenv from "dotenv";
 import authMiddleware from "./middleware/authMiddleware.js";
-
+import usecaseRoutes from './routes/useCaseRoutes.js'
 
 dotenv.config();
 
@@ -40,6 +40,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/kpi", authMiddleware,kpiRoutes);
 app.use("/api/datasource/", authMiddleware,dataSourceRoutes);
 app.use("/api/reports",reportRoutes)
+app.use("/api/usecases",usecaseRoutes)
+
 const PORT = process.env.PORT || 5454;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

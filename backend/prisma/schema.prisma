@@ -15,9 +15,10 @@ model User {
   customKPIs     CustomKPI[]
   customKPIsList CustomKPIList[]
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  CustomReport CustomReport[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  CustomReport   CustomReport[]
+  CustomUseCases CustomUseCases[]
 
   @@map("users")
 }
@@ -117,11 +118,13 @@ model Region {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  DataSource     DataSource[]
-  StandardReport StandardReport[]
-  CustomReport   CustomReport[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  DataSource      DataSource[]
+  StandardReport  StandardReport[]
+  CustomReport    CustomReport[]
+  StandardUseCase StandardUseCase[]
+  CustomUseCases  CustomUseCases[]
 
   @@map("regions")
 }
@@ -133,11 +136,13 @@ model SubjectArea {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  DataSource     DataSource[]
-  StandardReport StandardReport[]
-  CustomReport   CustomReport[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  DataSource      DataSource[]
+  StandardReport  StandardReport[]
+  CustomReport    CustomReport[]
+  StandardUseCase StandardUseCase[]
+  CustomUseCases  CustomUseCases[]
 
   @@map("subject_areas")
 }
@@ -149,11 +154,13 @@ model TherapyArea {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  DataSource     DataSource[]
-  StandardReport StandardReport[]
-  CustomReport   CustomReport[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  DataSource      DataSource[]
+  StandardReport  StandardReport[]
+  CustomReport    CustomReport[]
+  StandardUseCase StandardUseCase[]
+  CustomUseCases  CustomUseCases[]
 
   @@map("therapy_areas")
 }
@@ -165,11 +172,13 @@ model DistributionModel {
   kpi       Kpi[]
   customKPI CustomKPI[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  DataSource     DataSource[]
-  StandardReport StandardReport[]
-  CustomReport   CustomReport[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  DataSource      DataSource[]
+  StandardReport  StandardReport[]
+  CustomReport    CustomReport[]
+  StandardUseCase StandardUseCase[]
+  CustomUseCases  CustomUseCases[]
 
   @@map("distribution_models")
 }
@@ -276,4 +285,53 @@ model CustomReport {
   updatedAt DateTime @updatedAt
 
   @@map("custom_reports")
+}
+
+model StandardUseCase {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  category    String
+  description String
+
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
+
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
+
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
+
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("standard_usecases")
+}
+
+model CustomUseCases {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  category    String
+  description String
+
+  region     Region @relation(fields: [regionName], references: [name])
+  regionName String
+
+  subjectArea     SubjectArea @relation(fields: [subjectAreaName], references: [name])
+  subjectAreaName String
+
+  therapyArea     TherapyArea @relation(fields: [therapyAreaName], references: [name])
+  therapyAreaName String
+
+  distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
+  distributionModelName String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("custom_usecases")
 }

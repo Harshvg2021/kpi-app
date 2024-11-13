@@ -1,16 +1,18 @@
 import prisma from "../config/db.js";
 
-export const getReports = async (req, res) => {
+export const getUseCases = async (req, res) => {
   const {
     therapyAreaName,
     regionName,
     subjectAreaName,
     distributionModelName,
   } = req.body;
-  const userId = req.user.userId
-  console.log(userId)
+
+  const userId = req.user.userId;
+
+  console.log(userId);
   try {
-    const standardReports = await prisma.standardReport.findMany({
+    const standardUseCases = await prisma.standardUseCase.findMany({
       where: {
         therapyAreaName: therapyAreaName,
         regionName: regionName,
@@ -20,118 +22,117 @@ export const getReports = async (req, res) => {
       select: {
         category: true,
         description: true,
-        name: true,
       },
     });
 
-    const customReports = await prisma.customReport.findMany({
+    const customUseCases = await prisma.customUseCases.findMany({
       where: {
         therapyAreaName: therapyAreaName,
         regionName: regionName,
         subjectAreaName: subjectAreaName,
         distributionModelName: distributionModelName,
-        userId: req?.user?.userId,
-      },
-      select: {
-        category: true,
-        description: true,
-        name: true,
-      },
-    });
-
-    const reports = {
-      standardReports,
-      customReports,
-    };
-    if (standardReports.length === 0 && customReports.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reports found for the specified filters." });
-    }
-    res.status(200).json(reports);
-  } catch (error) {
-    console.error("Error fetching reports:", error);
-    res
-      .status(500)
-      .json({ message: "Error fetching reports", error: error.message });
-  }
-};
-
-export const getReportsByCategory = async (req, res) => {
-  const {
-    therapyAreaName,
-    regionName,
-    subjectAreaName,
-    distributionModelName,
-    categoryName
-  } = req.body;
-
-  const userId = req.user.userId
-  try {
-    const standardReports = await prisma.standardReport.findMany({
-      where: {
-        therapyAreaName: therapyAreaName,
-        regionName: regionName,
-        subjectAreaName: subjectAreaName,
-        distributionModelName: distributionModelName,
-        category: categoryName,
-      },
-      select: {
-        category: true,
-        description: true,
-        name: true,
-      },
-    });
-
-    const customReports = await prisma.customReport.findMany({
-      where: {
-        therapyAreaName: therapyAreaName,
-        regionName: regionName,
-        subjectAreaName: subjectAreaName,
-        distributionModelName: distributionModelName,
-        category: categoryName,
         userId: userId,
       },
       select: {
         category: true,
         description: true,
-        name: true,
       },
     });
 
-    const reports = {
-      standardReports,
-      customReports,
+    const useCases = {
+      standardUseCases,
+      customUseCases,
     };
-    if (standardReports.length === 0 && customReports.length === 0) {
+    if (standardUseCases.length === 0 && customUseCases.length === 0) {
       return res
         .status(404)
-        .json({ message: "No reports found for the specified filters." });
+        .json({ message: "No usecases found for the specified filters." });
     }
-    res.status(200).json(reports);
+
+    res.status(200).json(useCases);
   } catch (error) {
-    console.error("Error fetching reports:", error);
+    console.error("Error fetching use case:", error);
     res
       .status(500)
-      .json({ message: "Error fetching reports", error: error.message });
+      .json({ message: "Error fetching use case", error: error.message });
   }
 };
 
-export const addReport = async (req, res) => {
+export const getUseCaseByCategory = async (req, res) => {
+  const {
+    therapyAreaName,
+    regionName,
+    subjectAreaName,
+    distributionModelName,
+    category,
+  } = req.body;
+
+  const userId = req.user.userId;
+
+  console.log(userId);
+  try {
+    const standardUseCases = await prisma.standardUseCase.findMany({
+      where: {
+        therapyAreaName: therapyAreaName,
+        regionName: regionName,
+        subjectAreaName: subjectAreaName,
+        distributionModelName: distributionModelName,
+        category,
+      },
+      select: {
+        category: true,
+        description: true,
+      },
+    });
+
+    const customUseCases = await prisma.customUseCases.findMany({
+      where: {
+        therapyAreaName: therapyAreaName,
+        regionName: regionName,
+        subjectAreaName: subjectAreaName,
+        distributionModelName: distributionModelName,
+        userId: userId,
+        category,
+      },
+      select: {
+        category: true,
+        description: true,
+      },
+    });
+
+    const useCases = {
+      standardUseCases,
+      customUseCases,
+    };
+    if (standardUseCases.length === 0 && customUseCases.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No usecases found for the specified filters." });
+    }
+
+    res.status(200).json(useCases);
+  } catch (error) {
+    console.error("Error fetching use case:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching use case", error: error.message });
+  }
+};
+
+export const addUseCase = async (req, res) => {
   try {
     const {
-      name,
       category,
       description,
       therapyAreaName,
       regionName,
       subjectAreaName,
-      distributionModelName
+      distributionModelName,
     } = req.body;
-    const userId = req.user.userId
-    const newCustomReport = await prisma.customReport.create({
+    const userId = req.user.userId;
+
+    const newCustomUseCase = await prisma.customUseCases.create({
       data: {
-        name,
         category,
         description,
         therapyAreaName,
@@ -144,13 +145,13 @@ export const addReport = async (req, res) => {
       },
     });
     res.status(201).json({
-      message: "Custom report added successfully",
-      report: newCustomReport,
+      message: "Custom use case added successfully",
+      report: newCustomUseCase,
     });
   } catch (error) {
-    console.error("Error adding report:", error);
+    console.error("Error adding use case:", error);
     res
       .status(500)
-      .json({ message: "Error adding report", error: error.message });
+      .json({ message: "Error adding usecase", error: error.message });
   }
 };
