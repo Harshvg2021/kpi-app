@@ -48,10 +48,10 @@ const Page = () => {
       <CardContent className="  gap-8 grid md:grid-cols-12  grid-cols-4">
         <LinkGenerate text="Data" href="/data-source/subject" />
         <LinkGenerate text="KPI" href="/kpi/subject" />
-        <LinkGenerate text="Reports" />
-        <LinkGenerate text="Systems" />
+        <LinkGenerate text="Use cases" />
+        <LinkGenerate text="Reports" href="/reports" />
         <LinkGenerate text="Activities" />
-        <LinkGenerate text="Roadmap" />
+        <LinkGenerate text="Systems" />
       </CardContent>
       <CardFooter className="flex  gap-4 justify-between flex-wrap">
         <div className="flex  gap-4 flex-wrap">

@@ -13,8 +13,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Spinner } from "@/components/custom/Spinner";
 import { useGetVendorList } from "@/hooks/fetch/useFetchDataSource";
-import { useDataSourceList } from "@/context/DataSourceProvider";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useDataSourceList } from "@/context/DataSourceProvider";
 
 const DataSourceList = () => {
   const router = useRouter();
@@ -22,8 +22,7 @@ const DataSourceList = () => {
 
   const { data, isLoading } = useGetVendorList({ dataSourceItemId: params.id });
 
-  const { options, addToList, removeFromList, selectedList } =
-    useDataSourceList();
+  const { options, addToList, removeFromList, selectedList } = useDataSourceList();
 
   useEffect(() => {
     if (!options?.subjectArea) router.push("/data-source/subject");
@@ -114,7 +113,9 @@ const DataSourceList = () => {
             Back
           </Button>
           <Button
-            onClick={() => router.push(`/data-source/list/${params.id}/summary`)}
+            onClick={() =>
+              router.push(`/data-source/list/${params.id}/summary`)
+            }
             disabled={selectedList.length === 0}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >
