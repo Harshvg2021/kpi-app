@@ -53,7 +53,7 @@ async function uploadDataSources() {
             dataSourceId: existingDataSource.id,
             name: dataSourceName,
             description,
-            venderList: [], 
+            vendorList: [], 
           },
         });
         console.log(
@@ -70,7 +70,7 @@ async function uploadDataSources() {
               create: {
                 name: dataSourceName,
                 description,
-                venderList: [], 
+                vendorList: [], 
               },
             },
           },

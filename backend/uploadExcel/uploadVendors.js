@@ -37,8 +37,8 @@ async function uploadVendors() {
         await prisma.dataSourceItem.update({
           where: { id: dataSourceItem.id },
           data: {
-            venderList: {
-              push: vendors, // Append new vendors to the existing venderList
+            vendorList: {
+              push: vendors, 
             },
           },
         });
