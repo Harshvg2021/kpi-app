@@ -32,6 +32,7 @@ import { PopoverClose } from "@radix-ui/react-popover";
 import { useOnboarding } from "@/context/OnboardingProvider";
 import { useReportList } from "@/context/ReportProvider";
 import { useGetReport } from "@/hooks/fetch/useFetchReport";
+import CreateReport from "./components/CreateReport";
 
 const KPIList = () => {
   const router = useRouter();
@@ -53,7 +54,7 @@ const KPIList = () => {
 
   const parsedReports = useMemo(() => {
     return [
-      ...(reportList.data?.customReports?.map((e) => {
+      ...(reportList.data?.standardReports?.map((e) => {
         return {
           title: e.name,
           isCustom: true,
@@ -61,7 +62,7 @@ const KPIList = () => {
           category: e.category,
         };
       }) ?? []),
-      ...(reportList.data?.standardReports?.map((e) => {
+      ...(reportList.data?.customReports?.map((e) => {
         return {
           title: e.name,
           isCustom: true,
@@ -123,7 +124,7 @@ const KPIList = () => {
           </Select>
           <div className="flex gap-2 items-center">
             {/* <UploadKpi /> */}
-            {/* <CreateKpi /> */}
+            <CreateReport />
           </div>
         </div>
 
@@ -134,7 +135,7 @@ const KPIList = () => {
                 <TableHead></TableHead>
                 <TableHead>ReportI</TableHead>
                 <TableHead>Definition</TableHead>
-                <TableHead className="w-24">Action</TableHead>
+                {/* <TableHead className="w-24">Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -180,55 +181,6 @@ const KPIList = () => {
                   <TableCell className="align-top">
                     <p className="line-clamp-6">{eachReport.description}</p>
                   </TableCell>
-                  <TableCell className="align-top flex ">
-                    {eachReport.isCustom ? (
-                      <>
-                        {" "}
-                        {/* <UpdateKpi
-                          kpiListId={kpi.id}
-                          defaultTitle={kpi.title}
-                          defaultDescription={kpi.description}
-                        /> */}
-                        <Popover>
-                          <PopoverTrigger>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </PopoverTrigger>
-                          {/* <PopoverContent className="max-w-56 space-y-2">
-                            <Label>Are you sure?</Label>
-                            <p className="text-sm ">
-                              This action cannot be undone.
-                            </p>
-
-                            <PopoverClose className="flex gap-2 pt-4">
-                              <Button
-                                size={"sm"}
-                                variant={"destructive"}
-                                loading={deleteKPI.isPending}
-                                onClick={() => {
-                                  deleteKPI.mutate({
-                                    mutationBody: {
-                                      KPIListId: eachReport.id,
-                                    },
-                                  });
-                                }}
-                              >
-                                Delete
-                              </Button>
-                              <PopoverClose>
-                                <Button size={"sm"} variant={"outline"}>
-                                  Cancel
-                                </Button>
-                              </PopoverClose>
-                            </PopoverClose>
-                          </PopoverContent> */}
-                        </Popover>
-                      </>
-                    ) : (
-                      "Standard"
-                    )}
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -237,14 +189,14 @@ const KPIList = () => {
 
         <div className="flex justify-center gap-4">
           <Button
-            onClick={() => router.push(`/kpi/subject`)}
+            onClick={() => router.push(`/reports/subject`)}
             icon={<SkipBack size={12} />}
             className="bg-blue-900 hover:bg-blue-800 "
           >
             Back
           </Button>
           <Button
-            onClick={() => router.push(`/kpi/summary`)}
+            onClick={() => router.push(`/reports/summary`)}
             disabled={selectedList.length === 0}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >

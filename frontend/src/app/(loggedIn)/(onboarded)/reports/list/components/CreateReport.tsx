@@ -15,22 +15,22 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useOnboarding } from "@/context/OnboardingProvider";
 import { useReportList } from "@/context/ReportProvider";
-// import { useCreateKPI } from "@/hooks/fetch/useFetchKPI";
+import { useCreateReport } from "@/hooks/fetch/useFetchReport";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-const CreateKpi = () => {
+const CreateReport = () => {
   const search = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { options } = useReportList();
   const { selectedOnboarding } = useOnboarding();
-  // const createKpi = useCreateKPI({
-  //   distribution_model: selectedOnboarding?.distributionModel,
-  //   region: selectedOnboarding?.region,
-  //   subject_area: options?.subjectArea,
-  //   therapy_area: selectedOnboarding?.therapyArea,
-  // });
+  const createReport = useCreateReport({
+    distributionModelName: selectedOnboarding?.distributionModel,
+    regionName: selectedOnboarding?.region,
+    subjectAreaName: options?.subjectArea,
+    therapyAreaName: selectedOnboarding?.therapyArea,
+  });
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   return (
@@ -41,26 +41,26 @@ const CreateKpi = () => {
           variant={"default"}
           className="bg-blue-500 hover:bg-blue-600"
         >
-          Add New KPI
+          Add New report
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add New KPI</DialogTitle>
+          <DialogTitle>Add New Report</DialogTitle>
           <DialogDescription>
-            Please add kpi name and description to create a new KPI.
+            Please add report name and description to create a new report.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid  items-center gap-4">
             <Label htmlFor="name" className="">
-              KPI Name
+              Report Name
             </Label>
             <Input
               id="name"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Please enter kpi name"
+              placeholder="Please enter report name"
               className="col-span-3"
             />
           </div>
@@ -72,7 +72,7 @@ const CreateKpi = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               id="description"
-              placeholder="Please enter kpi description"
+              placeholder="Please enter report description"
               className="col-span-3 min-h-20"
             />
           </div>
@@ -84,18 +84,18 @@ const CreateKpi = () => {
             </Button>
           </DialogClose>
           <Button
-            // loading={createKpi.isPending}
+            loading={createReport.isPending}
             onClick={async () => {
-              // await createKpi.mutateAsync({
-              //   mutationBody: {
-              //     kpi_description: description,
-              //     kpi_name: title,
-              //   },
-              // });
+              await createReport.mutateAsync({
+                mutationBody: {
+                  description: description,
+                  name: title,
+                },
+              });
               setTitle("");
               setDescription("");
               setDialogOpen(false);
-              toast.success("KPI created successfully");
+              toast.success("Report created successfully");
             }}
             className="bg-blue-500 hover:bg-blue-600"
             type="submit"
@@ -108,4 +108,4 @@ const CreateKpi = () => {
   );
 };
 
-export default CreateKpi;
+export default CreateReport;

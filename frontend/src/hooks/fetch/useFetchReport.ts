@@ -24,37 +24,37 @@ export type FetchReports = {
 
 export const useGetReport = (props: GetReports) => {
   return useFetchByPost<FetchReports>(
-    "/api/report/getReports",
+    "/api/reports/getReports",
     ["report", JSON.stringify(props)],
     props
   );
 };
 
-// export type CreateReports = {
-//   therapy_area?: string;
-//   region?: string;
-//   distribution_model?: string;
-//   subject_area?: string;
-// };
+export type CreateReports = {
+  therapyAreaName?: string;
+  regionName?: string;
+  distributionModelName?: string;
+  subjectAreaName?: string;
+};
 
-// export type createReportMutate = {
-//   report_name: string;
-//   report_description: string;
-// };
+export type createReportMutate = {
+  name: string;
+  description: string;
+};
 
-// export const useCreateReport = (props: GetReports) => {
-//   const client = useQueryClient();
-//   const refetch = JSON.stringify(props);
-//   return useCustomMutation<CreateReports, createReportMutate, null>({
-//     apiRoute: "/api/report/add",
-//     body: props,
-//     onSuccess: () => {
-//       client.invalidateQueries({
-//         queryKey: ["report"],
-//       });
-//     },
-//   });
-// };
+export const useCreateReport = (props: GetReports) => {
+  const client = useQueryClient();
+  const refetch = JSON.stringify(props);
+  return useCustomMutation<CreateReports, createReportMutate, null>({
+    apiRoute: "/api/reports/addReport",
+    body: props,
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: ["report"],
+      });
+    },
+  });
+};
 
 // export const useDeleteReport = () => {
 //   const query = useQueryClient();
