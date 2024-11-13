@@ -254,7 +254,7 @@ model StandardReport {
 model CustomReport {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String
-  category    String
+  category    String @default("Custom")
   description String
 
   region     Region @relation(fields: [regionName], references: [name])
