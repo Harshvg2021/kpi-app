@@ -312,7 +312,7 @@ model StandardUseCase {
 
 model CustomUseCases {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
-  category    String
+  category    String @default("Custom")
   description String
 
   region     Region @relation(fields: [regionName], references: [name])

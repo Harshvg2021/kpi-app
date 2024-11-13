@@ -4,8 +4,8 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/getUsecases',authMiddleware, getUseCases);
-router.post('/getUsecasesByCategory', authMiddleware, getUseCaseByCategory);
-router.post('/addUsecase',authMiddleware, addUseCase);
+router.post('/getUseCases',authMiddleware, getUseCases);
+router.post('/getUseCasesByCategory', authMiddleware, getUseCaseByCategory);
+router.post('/addUseCase',authMiddleware, addUseCase);
 
 export default router;

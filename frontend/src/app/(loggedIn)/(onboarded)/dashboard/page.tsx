@@ -48,8 +48,8 @@ const Page = () => {
       <CardContent className="  gap-8 grid md:grid-cols-12  grid-cols-4">
         <LinkGenerate text="Data" href="/data-source/subject" />
         <LinkGenerate text="KPI" href="/kpi/subject" />
-        <LinkGenerate text="Use cases" />
-        <LinkGenerate text="Reports" href="/reports" />
+        <LinkGenerate text="Use cases" href="/use-cases/subject" />
+        <LinkGenerate text="Reports" href="/reports/subject" />
         <LinkGenerate text="Activities" />
         <LinkGenerate text="Systems" />
       </CardContent>
