@@ -1,8 +1,7 @@
 import { useLocalStorage } from "@/hooks/usePersistenceStorage";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { string } from "zod";
 
-type DataSourceType = { name: string; description: string };
+type DataSourceType = { name: string };
 
 interface SelectedListContextType {
   selectedList: DataSourceType[];
@@ -22,9 +21,9 @@ type KpiOptions = {
 };
 
 // Provider component
-export const SelectedDataSourceListProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const SelectedDataSourceListProvider: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
   const [selectedList, setSelectedList] = useState<DataSourceType[]>([]);
   const [options, setOptions] = useLocalStorage<KpiOptions>("kpi-options", {
     subjectArea: "",

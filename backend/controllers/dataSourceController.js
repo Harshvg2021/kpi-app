@@ -44,15 +44,11 @@ const getVendorList = async (req, res) => {
         id: dataSourceItemId,
       },
       select: {
+        name: true,
         vendorList: true,
       },
     });
-    console.log(vendorList)
-    if (!vendorList) {
-      return res
-        .status(404)
-        .json({ message: "No vendor list found for the specified criteria." });
-    }
+    console.log(vendorList);
 
     res.status(200).json(vendorList);
   } catch (error) {

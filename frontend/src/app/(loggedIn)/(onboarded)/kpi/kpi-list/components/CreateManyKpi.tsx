@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useKpiList } from "@/context/KpiProvider";
 import { useOnboarding } from "@/context/OnboardingProvider";
 import { useCreateKPI, useCreateManyKPI } from "@/hooks/fetch/useFetchKPI";
-import { parseExcelFile } from "@/lib/convertor";
+import { parseExcelFile } from "@/lib/convertor/convertor";
 import { Paperclip, Upload } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
@@ -38,7 +38,7 @@ const UploadKpi = () => {
       description: string;
     }[]
   >([]);
-  const { selectedOnboarding  } = useOnboarding();
+  const { selectedOnboarding } = useOnboarding();
   const { options } = useKpiList();
   const createKpi = useCreateManyKPI({
     distribution_model: selectedOnboarding?.distributionModel,

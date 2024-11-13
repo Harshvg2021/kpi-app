@@ -9,28 +9,32 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useDataSourceList } from "@/context/DataSourceProvider";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 type VendorList = {
   name: string;
+  id: string;
   description: string;
   vendor: string[];
 };
 
 const Vendors = (dataSource: VendorList) => {
   const { selectedList, addToList, removeFromList } = useDataSourceList();
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
+  const router = useRouter();
 
   return (
     <>
       <TableRow
         className={cn(
-          "align-top even:bg-blue-50 cursor-pointer",
-          open && "bg-blue-50"
+          "align-top even:bg-blue-50 cursor-pointer hover:text-blue-500 transition-all hover:underline underline-offset-0 hover:underline-offset-2"
+          // open && "bg-blue-50"
         )}
-        onClick={() => setOpen(!open)}
+        onClick={() => router.push(`/data-source/list/${dataSource.id}`)}
       >
-        <TableCell className={cn("align-top")}>
+        {/* <TableCell className={cn("align-top")}>
           <div className="flex items-start">
             <Checkbox
               checked={
@@ -53,7 +57,7 @@ const Vendors = (dataSource: VendorList) => {
               }}
             />
           </div>
-        </TableCell>
+        </TableCell> */}
         <TableCell className="font-medium align-top">
           <p className="flex items-start text-nowrap">{dataSource.name}</p>
         </TableCell>
@@ -61,7 +65,7 @@ const Vendors = (dataSource: VendorList) => {
           <p className="line-clamp-6">{dataSource.description}</p>
         </TableCell>
       </TableRow>
-      <TableRow className="w-full">
+      {/* <TableRow className="w-full">
         <TableCell colSpan={3} className="p-0">
           <Accordion
             value={open ? "yes" : "no"}
@@ -93,7 +97,7 @@ const Vendors = (dataSource: VendorList) => {
             </AccordionItem>
           </Accordion>
         </TableCell>
-      </TableRow>
+      </TableRow> */}
     </>
   );
 };

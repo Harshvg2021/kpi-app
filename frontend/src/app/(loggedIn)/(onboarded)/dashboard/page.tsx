@@ -10,7 +10,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useOnboarding } from "@/context/OnboardingProvider";
-import { RefreshCcw, Undo } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useSession } from "@/hooks/useSession";
+import { LogOut, RefreshCcw, Undo } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -33,6 +35,7 @@ const LinkGenerate = ({ href, text }: { href?: string; text: string }) => {
 };
 
 const Page = () => {
+  const { logout } = useAuth();
   const { selectedOnboarding, clearOnboarding } = useOnboarding();
   return (
     <Card className="w-full max-w-[90vw] min-h-[80vh]">
@@ -50,24 +53,40 @@ const Page = () => {
         <LinkGenerate text="Activities" />
         <LinkGenerate text="Roadmap" />
       </CardContent>
-      <CardFooter className="flex  gap-4 flex-wrap">
-        <Button onClick={clearOnboarding} icon={<RefreshCcw />}>
-          Reset
+      <CardFooter className="flex  gap-4 justify-between flex-wrap">
+        <div className="flex  gap-4 flex-wrap">
+          <Button
+            size={"sm"}
+            variant={"outline"}
+            className="shadow-md"
+            onClick={clearOnboarding}
+            icon={<RefreshCcw />}
+          >
+            Reset
+          </Button>
+          <div className="flex flex-col font-semibold gap-1">
+            <span className="">Therapy Area</span>
+            <Badge> {selectedOnboarding?.therapyArea}</Badge>
+          </div>
+          <div>
+            <span className="flex flex-col font-semibold gap-1">Region </span>
+            <Badge> {selectedOnboarding?.region}</Badge>
+          </div>
+          <div>
+            <span className="flex flex-col font-semibold gap-1">
+              Distribution
+            </span>
+            <Badge> {selectedOnboarding?.distributionModel}</Badge>
+          </div>
+        </div>
+        <Button
+          variant={"destructive"}
+          onClick={() => logout()}
+          icon={<LogOut />}
+          size={"sm"}
+        >
+          Logout
         </Button>
-        <div className="flex flex-col font-semibold gap-1">
-          <span className="">Therapy Area</span>
-          <Badge> {selectedOnboarding?.therapyArea}</Badge>
-        </div>
-        <div>
-          <span className="flex flex-col font-semibold gap-1">Region </span>
-          <Badge> {selectedOnboarding?.region}</Badge>
-        </div>
-        <div>
-          <span className="flex flex-col font-semibold gap-1">
-            Distribution
-          </span>
-          <Badge> {selectedOnboarding?.distributionModel}</Badge>
-        </div>
       </CardFooter>
     </Card>
   );

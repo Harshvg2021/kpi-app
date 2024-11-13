@@ -46,8 +46,21 @@ export const useAuth = () => {
     }
   };
 
+  const logout = async () => {
+    try {
+      await AxiosClient.logout();
+      authDispatch(AuthActions.logout());
+      router.push("/");
+      return null;
+    } catch (error: any) {
+      toast(error.message);
+      return error;
+    }
+  };
+
   return {
     loginMutation,
+    logout,
     autoLoginMutation,
   };
 };

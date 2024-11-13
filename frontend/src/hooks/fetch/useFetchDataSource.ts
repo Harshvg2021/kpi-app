@@ -27,3 +27,14 @@ export const useGetDataSource = (props: GetDataSource) => {
     props
   );
 };
+
+export const useGetVendorList = (props: { dataSourceItemId: string }) => {
+  return useFetchByPost<{
+    name: string;
+    vendorList: string[];
+  } | null>(
+    "/api/datasource/getVendorList",
+    ["vendorList", JSON.stringify(props)],
+    props
+  );
+};
