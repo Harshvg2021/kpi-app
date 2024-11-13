@@ -30,7 +30,7 @@ export const getReports = async (req, res) => {
         regionName: regionName,
         subjectAreaName: subjectAreaName,
         distributionModelName: distributionModelName,
-        userId: userId,
+        userId: req?.user?.userId,
       },
       select: {
         category: true,
@@ -43,11 +43,7 @@ export const getReports = async (req, res) => {
       standardReports,
       customReports,
     };
-    if (standardReports.length === 0 && customReports.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No reports found for the specified filters." });
-    }
+
     res.status(200).json(reports);
   } catch (error) {
     console.error("Error fetching reports:", error);

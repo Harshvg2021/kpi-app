@@ -1,14 +1,19 @@
 import { useLocalStorage } from "@/hooks/usePersistenceStorage";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-type DataSourceType = { name: string };
+type DataSourceType = { 
+  title: string;
+  description: string;
+  category?: string;
+  isCustom: boolean;
+};
 
 interface SelectedListContextType {
   selectedList: DataSourceType[];
-  addToList: (kpi: DataSourceType) => void;
+  addToList: (report: DataSourceType) => void;
   selectSubjectArea: (subject: string) => void;
-  removeFromList: (kpi: DataSourceType) => void;
-  options: KpiOptions | undefined;
+  removeFromList: (report: DataSourceType) => void;
+  options: reportOptions | undefined;
 }
 
 // Create the context with a default value of null
@@ -16,30 +21,33 @@ const SelectedListContext = createContext<SelectedListContextType | undefined>(
   undefined
 );
 
-type KpiOptions = {
+type reportOptions = {
   subjectArea: string;
 };
 
 // Provider component
-export const SelectedDataSourceListProvider: React.FC<{
+export const SelectedReportProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
   const [selectedList, setSelectedList] = useState<DataSourceType[]>([]);
-  const [options, setOptions] = useLocalStorage<KpiOptions>("data-options", {
-    subjectArea: "",
-  });
+  const [options, setOptions] = useLocalStorage<reportOptions>(
+    "report-options",
+    {
+      subjectArea: "",
+    }
+  );
 
-  const addToList = (kpi: DataSourceType) => {
-    setSelectedList((prevList) => [...prevList, kpi]);
+  const addToList = (report: DataSourceType) => {
+    setSelectedList((prevList) => [...prevList, report]);
   };
 
   const selectSubjectArea = (subjectArea: string) => {
     setOptions({ ...options, subjectArea: subjectArea });
   };
 
-  const removeFromList = (kpi: DataSourceType) => {
+  const removeFromList = (report: DataSourceType) => {
     setSelectedList((prevList) =>
-      prevList.filter((item) => item.name !== kpi.name)
+      prevList.filter((item) => item.title !== report.title)
     );
   };
 
@@ -59,7 +67,7 @@ export const SelectedDataSourceListProvider: React.FC<{
 };
 
 // Custom hook for easier usage
-export const useDataSourceList = (): SelectedListContextType => {
+export const useReportList = (): SelectedListContextType => {
   const context = useContext(SelectedListContext);
   if (!context) {
     throw new Error(

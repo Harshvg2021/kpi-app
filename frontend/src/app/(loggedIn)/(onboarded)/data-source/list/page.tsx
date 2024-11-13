@@ -23,19 +23,19 @@ import {
 } from "@/components/ui/select";
 import { useOnboarding } from "@/context/OnboardingProvider";
 import { useGetDataSource } from "@/hooks/fetch/useFetchDataSource";
-import { useDataSourceList } from "@/context/DataSourceProvider";
 import { Checkbox } from "@/components/ui/checkbox";
-import Vendors from "./components/Vendors";
 
-const DataSourceList = () => {
+import Vendors from "./components/Vendors";
+import { useDataSourceList } from "@/context/DataSourceProvider";
+
+const Page = () => {
   const router = useRouter();
   const deleteKPI = useDeleteKPI();
   const [category, setCategory] = useState<string>("All");
   const { data } = useCategories();
 
   const { selectedOnboarding } = useOnboarding();
-  const { options, addToList, removeFromList, selectedList } =
-    useDataSourceList();
+  const { options, addToList, removeFromList, selectedList } = useDataSourceList();
 
   const dataSourceList = useGetDataSource({
     distributionModel: selectedOnboarding?.distributionModel,
@@ -169,4 +169,4 @@ const DataSourceList = () => {
   );
 };
 
-export default DataSourceList;
+export default Page;
