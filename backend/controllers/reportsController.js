@@ -7,8 +7,8 @@ export const getReports = async (req, res) => {
     subjectAreaName,
     distributionModelName,
   } = req.body;
-  const userId = req.user.userId
-  console.log(userId)
+  const userId = req.user.userId;
+  console.log(userId);
   try {
     const standardReports = await prisma.standardReport.findMany({
       where: {
@@ -63,10 +63,10 @@ export const getReportsByCategory = async (req, res) => {
     regionName,
     subjectAreaName,
     distributionModelName,
-    categoryName
+    categoryName,
   } = req.body;
 
-  const userId = req.user.userId
+  const userId = req.user.userId;
   try {
     const standardReports = await prisma.standardReport.findMany({
       where: {
@@ -121,25 +121,31 @@ export const addReport = async (req, res) => {
   try {
     const {
       name,
-      category,
       description,
       therapyAreaName,
       regionName,
       subjectAreaName,
-      distributionModelName
+      distributionModelName,
     } = req.body;
-    const userId = req.user.userId
+    const userId = req.user.userId;
     const newCustomReport = await prisma.customReport.create({
       data: {
         name,
-        category,
         description,
-        therapyAreaName,
-        regionName,
-        subjectAreaName,
-        distributionModelName,
         user: {
           connect: { id: userId },
+        },
+        region: {
+          connect: { name: regionName },
+        },
+        subjectArea: {
+          connect: { name: subjectAreaName },
+        },
+        distributionModel: {
+          connect: { name: distributionModelName },
+        },
+        therapyArea: {
+          connect: { name: therapyAreaName },
         },
       },
     });

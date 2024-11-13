@@ -35,7 +35,8 @@ const Page = () => {
   const { data } = useCategories();
 
   const { selectedOnboarding } = useOnboarding();
-  const { options, addToList, removeFromList, selectedList } = useDataSourceList();
+  const { options, addToList, removeFromList, selectedList } =
+    useDataSourceList();
 
   const dataSourceList = useGetDataSource({
     distributionModel: selectedOnboarding?.distributionModel,
@@ -158,7 +159,7 @@ const Page = () => {
             Back
           </Button>
           <Button
-            disabled={selectedList.length === 0}
+            disabled={true}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >
             Submit

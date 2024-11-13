@@ -81,7 +81,7 @@ const Page = () => {
 
         <div className="flex self-end justify-end items-center gap-4 mt-6">
           <Button
-            onClick={() => router.push(`/report/list?${search.toString()}`)}
+            onClick={() => router.push(`/reports/list?${search.toString()}`)}
             variant="outline"
             className="text-gray-600"
           >
