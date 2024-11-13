@@ -6,9 +6,9 @@ export const getReports = async (req, res) => {
     regionName,
     subjectAreaName,
     distributionModelName,
-    userId,
   } = req.body;
-
+  const userId = req.user.userId
+  console.log(userId)
   try {
     const standardReports = await prisma.standardReport.findMany({
       where: {
@@ -63,10 +63,10 @@ export const getReportsByCategory = async (req, res) => {
     regionName,
     subjectAreaName,
     distributionModelName,
-    categoryName,
-    userId,
+    categoryName
   } = req.body;
 
+  const userId = req.user.userId
   try {
     const standardReports = await prisma.standardReport.findMany({
       where: {
@@ -126,9 +126,9 @@ export const addReport = async (req, res) => {
       therapyAreaName,
       regionName,
       subjectAreaName,
-      distributionModelName,
-      userId,
+      distributionModelName
     } = req.body;
+    const userId = req.user.userId
     const newCustomReport = await prisma.customReport.create({
       data: {
         name,
