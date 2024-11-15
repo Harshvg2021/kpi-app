@@ -43,11 +43,6 @@ export const getUseCases = async (req, res) => {
       standardUseCases,
       customUseCases,
     };
-    if (standardUseCases.length === 0 && customUseCases.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No usecases found for the specified filters." });
-    }
 
     res.status(200).json(useCases);
   } catch (error) {
@@ -122,7 +117,6 @@ export const getUseCaseByCategory = async (req, res) => {
 export const addUseCase = async (req, res) => {
   try {
     const {
-      category,
       description,
       therapyAreaName,
       regionName,
@@ -133,14 +127,21 @@ export const addUseCase = async (req, res) => {
 
     const newCustomUseCase = await prisma.customUseCases.create({
       data: {
-        category,
         description,
-        therapyAreaName,
-        regionName,
-        subjectAreaName,
-        distributionModelName,
         user: {
           connect: { id: userId },
+        },
+        region: {
+          connect: { name: regionName },
+        },
+        subjectArea: {
+          connect: { name: subjectAreaName },
+        },
+        distributionModel: {
+          connect: { name: distributionModelName },
+        },
+        therapyArea: {
+          connect: { name: therapyAreaName },
         },
       },
     });

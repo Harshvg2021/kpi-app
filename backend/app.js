@@ -40,7 +40,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/kpi", authMiddleware,kpiRoutes);
 app.use("/api/datasource/", authMiddleware,dataSourceRoutes);
 app.use("/api/reports",reportRoutes)
-app.use("/api/usecases",usecaseRoutes)
+app.use("/api/use-case",usecaseRoutes)
 app.use("/api/levels" , levelsRoute)
 const PORT = process.env.PORT || 5454;
 app.listen(PORT, () => {
