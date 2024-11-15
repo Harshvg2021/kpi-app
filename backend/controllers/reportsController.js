@@ -160,3 +160,73 @@ export const addReport = async (req, res) => {
       .json({ message: "Error adding report", error: error.message });
   }
 };
+
+export const addKpiWithReportFilter = async (req, res) => {
+  const {
+    regionName,
+    therapyAreaName,
+    subjectAreaName,
+    distributionModelName,
+    reportId,
+    levelName,
+    kpi_name,
+    kpi_description,
+  } = req.body;
+
+  const userId = req.user.userId;
+  try {
+      console.log("hel")
+      const kpis = await prisma.customKPI.findFirst({
+        where: {
+          therapyAreaName: therapyAreaName,
+          regionName: regionName,
+          distributionModelName: distributionModelName,
+          subjectAreaName: subjectAreaName,
+          userId :userId,
+          reportId: reportId,
+        },
+        select: {
+          id : true
+        },
+      });
+      console.log(kpis);
+      
+      if (kpis?.id) {
+        await prisma.customKPIList.create({
+          data: {
+            userId,
+            title: kpi_name,
+            description: kpi_description,
+            customKpisId: kpis.id,
+            levelName: levelName,
+          },
+        });
+      } else {
+        await prisma.customKPI.create({
+          data: {
+            regionName: regionName,
+            subjectAreaName: subjectAreaName,
+            therapyAreaName: therapyAreaName,
+            distributionModelName: distributionModelName,
+            userId,
+            reportId : reportId,
+            kpiLists: {
+              create: {
+                userId,
+                title: kpi_name,
+                description: kpi_description,
+                levelName :level
+              },
+            },
+          },
+        });
+      }
+
+    res.status(200).json({
+      message: "added new KPI",
+    });
+  } catch (error) {
+    console.error("Error fetching KPIs:", error);
+    res.status(500).json({ error: "An error occurred while fetching KPIs" });
+  }
+};

@@ -387,6 +387,87 @@ const editCustomKPI = async (req, res) => {
   }
 };
 
+
+
+const getKpiFilterByReport = async (req, res) => {
+  try {
+    const {
+      therapyArea,
+      region,
+      distributionModel,
+      subjectArea,
+      reportId,
+      level, 
+    } = req.body;
+
+   
+    if (!therapyArea || !region || !distributionModel || !subjectArea || !reportId) {
+      return res.status(400).json({ error: 'Missing required fields.' });
+    }
+    const standardKPIs = await prisma.kpi.findMany({
+      where: {
+        therapyAreaName: therapyArea,
+        regionName: region,
+        distributionModelName: distributionModel,
+        subjectAreaName: subjectArea,
+        reportId,
+        ...(level && { kpiLists: { some: { levelName: level } } }), 
+      },
+      select: {
+        kpiLists: {
+          select: {
+            id: true,
+            categoryName: true,
+            description: true,
+            title: true,
+          },
+          where: {
+            levelName: level|| undefined, 
+          },
+        },
+      },
+    });
+    console.log(standardKPIs)
+    const customKPIs = await prisma.customKPI.findMany({
+      where: {
+        therapyAreaName: therapyArea,
+        regionName: region,
+        distributionModelName: distributionModel,
+        subjectAreaName: subjectArea,
+        reportId: reportId,
+        ...(level && { kpiLists: { some: { levelName: level } } }),
+      },
+      select: {
+        kpiLists: {
+          select: {
+            id: true,
+            categoryName: true,
+            description: true,
+            title: true,
+          },
+          where: {
+            levelName: level|| undefined, 
+          },
+        },
+      },
+    });
+
+    const totalKPIs = standardKPIs.length + customKPIs.length;
+
+    const combinedKPIs = {"standardKpis" : standardKPIs , "customKpis" : customKPIs};
+
+    return res.status(200).json({
+      totalKPIs,
+      combinedKPIs,
+    });
+  } catch (error) {
+    console.error('Error fetching aggregated KPIs:', error);
+    return res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+
+
 export {
   getKPIs,
   createKPI,
@@ -399,4 +480,5 @@ export {
   editCustomKPI,
   addManyCustomKPI,
   getCategories,
+  getKpiFilterByReport
 };

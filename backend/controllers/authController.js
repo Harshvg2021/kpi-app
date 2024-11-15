@@ -1,8 +1,12 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import prisma from "../config/db.js";
+import dotenv from 'dotenv'
+
+dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
+console.log(jwtSecret)
 const jwtExpiration = process.env.JWT_EXPIRATION || "365d";
 
 const login = async (req, res) => {

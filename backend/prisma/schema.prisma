@@ -46,6 +46,8 @@ model CustomKPI {
   user   User   @relation(fields: [userId], references: [id])
   userId String @db.ObjectId
 
+  reportId String? @db.ObjectId
+
   @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName, userId])
   @@map("custom_kpis")
 }
@@ -66,6 +68,9 @@ model CustomKPIList {
 
   category     Category? @relation(fields: [categoryName], references: [name])
   categoryName String    @default("Custom")
+
+  level     Level?  @relation(fields: [levelName], references: [name])
+  levelName String?
 
   @@unique([title, description, categoryName, customKpisId])
   @@map("custom_kpi_lists")
@@ -90,6 +95,8 @@ model Kpi {
   distributionModel     DistributionModel @relation(fields: [distributionModelName], references: [name])
   distributionModelName String
 
+  reportId String? @db.ObjectId
+
   @@unique([distributionModelName, regionName, subjectAreaName, therapyAreaName])
   @@map("kpis")
 }
@@ -106,6 +113,9 @@ model KpiList {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  level     Level?  @relation(fields: [levelName], references: [name])
+  levelName String?
 
   @@unique([title, description, categoryName])
   @@map("kpi_lists")
@@ -334,4 +344,16 @@ model CustomUseCases {
   updatedAt DateTime @updatedAt
 
   @@map("custom_usecases")
+}
+
+model Level {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String @unique()
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  CustomKPIList CustomKPIList[]
+  KpiList       KpiList[]
+
+  @@map("levels")
 }

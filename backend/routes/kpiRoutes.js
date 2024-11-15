@@ -11,6 +11,7 @@ import {
   editCustomKPI,
   getCategories,
   addManyCustomKPI,
+  getKpiFilterByReport,
 } from "../controllers/kpiController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -28,6 +29,8 @@ router.get("/getSubjectAreas", authMiddleware, getSubjectAreas);
 router.get("/getCategories", authMiddleware, getCategories);
 router.post("/addCustomKPI", authMiddleware, addCustomKPI);
 router.post("/addManyCustomKPIs", authMiddleware, addManyCustomKPI);
+router.post("/getKpiByReports", authMiddleware, getKpiFilterByReport);
+
 router.delete("/deleteCustomKPI", authMiddleware, deleteCustomKPI);
 router.put("/editCustomKPI", authMiddleware, editCustomKPI);
 
