@@ -1,125 +1,55 @@
 "use client";
+import { Spinner } from "@/components/custom/Spinner";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
   TableHeader,
   TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  Table,
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { SkipBack, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCategories } from "@/hooks/fetch/useFetchKPI";
-import { useEffect, useMemo, useState } from "react";
-import { Spinner } from "@/components/custom/Spinner";
+import { useGetLevels, useGetReportKpi } from "@/hooks/fetch/useFetchReport";
 import {
   Select,
+  SelectTrigger,
+  SelectValue,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { PopoverClose } from "@radix-ui/react-popover";
-import { useOnboarding } from "@/context/OnboardingProvider";
+import { SkipBack } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import router from "next/router";
+import React, { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useReportList } from "@/context/ReportProvider";
-import { useGetReport } from "@/hooks/fetch/useFetchReport";
-import CreateReport from "./components/CreateReport";
-import Link from "next/link";
+import CreateReportKpi from "./components/CreateReportKpi";
 
-const KPIList = () => {
-  const router = useRouter();
-  const [category, setCategory] = useState<string>("All");
-  const { data } = useCategories();
-
-  const { selectedOnboarding } = useOnboarding();
-  const { options } = useReportList();
-
-  const reportList = useGetReport({
-    distributionModelName: selectedOnboarding?.distributionModel,
-    regionName: selectedOnboarding?.region,
-    subjectAreaName: options?.subjectArea,
-    therapyAreaName: selectedOnboarding?.therapyArea,
+const Page = ({ params }: { params: { id: string } }) => {
+  const search = useSearchParams();
+  const kpis = useGetReportKpi({
+    id: params.id,
+    isCustom: search.get("isCustom") == "true",
   });
-  useEffect(() => {
-    if (!options?.subjectArea) router.push("/kpi/subject");
-  }, [options?.subjectArea]);
-
-  const parsedReports = useMemo(() => {
-    return [
-      ...(reportList.data?.standardReports?.map((e) => {
-        return {
-          title: e.name,
-          isCustom: false,
-          description: e.description,
-          category: e.category,
-          id: e.id,
-        };
-      }) ?? []),
-      ...(reportList.data?.customReports?.map((e) => {
-        return {
-          title: e.name,
-          isCustom: true,
-          description: e.description,
-          category: e.category,
-          id: e.id,
-        };
-      }) ?? []),
-    ];
-  }, [reportList.data]);
-
-  const [report, setReport] = useState<
-    {
-      title: string;
-      description: string;
-      category?: string;
-      id: string;
-      isCustom: boolean;
-    }[]
-  >([]);
-
-  useEffect(() => {
-    if (reportList.data) {
-      setReport(parsedReports ?? []);
-    }
-  }, [parsedReports]);
-
-  useEffect(() => {
-    if (category !== "All") {
-      setReport(
-        parsedReports?.filter((kpi) => kpi.category === category) ?? []
-      );
-    } else {
-      setReport(parsedReports ?? []);
-    }
-  }, [category]);
-
-  const { addToList, removeFromList, selectedList } = useReportList();
-
+  const { selectSubjectArea, addToList, selectedList, removeFromList } =
+    useReportList();
+  const [category, setCategory] = useState("");
+  const levels = useGetLevels();
   return (
     <div className="">
       <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col min-h-[90vh]  gap-4 mx-auto max-h-[90vh]">
         <div className="flex md:justify-between flex-col md:flex-row items-center">
-          <h1 className="text-2xl font-bold">
-            Report List - {options?.subjectArea}
-          </h1>
+          <h1 className="text-2xl font-bold">Kpi list</h1>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Category" />
+              <SelectValue placeholder="Select Level" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="All">All categories</SelectItem>
-                {data?.map((e) => (
-                  <SelectItem key={e.id} value={e.name}>
+                <SelectItem value="All">All levels</SelectItem>
+                {levels?.data?.map((e) => (
+                  <SelectItem key={e.name} value={e.name}>
                     {e.name}
                   </SelectItem>
                 ))}
@@ -128,7 +58,7 @@ const KPIList = () => {
           </Select>
           <div className="flex gap-2 items-center">
             {/* <UploadKpi /> */}
-            <CreateReport />
+            <CreateReportKpi />
           </div>
         </div>
 
@@ -136,37 +66,33 @@ const KPIList = () => {
           <Table>
             <TableHeader className="bg-white rounded-t-md z-10">
               <TableRow>
+                <TableHead className="w-8"></TableHead>
                 <TableHead className="w-80">Report</TableHead>
                 <TableHead>Definition</TableHead>
                 {/* <TableHead className="w-24">Action</TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {reportList.isLoading ? (
+              {kpis.isLoading ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center mx-auto">
                     <Spinner className="mx-auto" />
                   </TableCell>
                 </TableRow>
               ) : null}
-              {parsedReports?.length === 0 && !reportList.isLoading && (
+              {!kpis.isLoading && kpis.data?.length == 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center">
-                    No reports found
+                    No kpis found
                   </TableCell>
                 </TableRow>
               )}
-              {report?.toReversed().map((eachReport, index) => (
+              {kpis.data?.toReversed().map((eachReport, index) => (
                 <TableRow
                   key={index}
                   className="align-top group cursor-pointer even:bg-blue-50"
-                  onClick={() =>
-                    router.push(
-                      `/reports/list/${eachReport.id}?custom=${eachReport.isCustom}`
-                    )
-                  }
                 >
-                  {/* <TableCell className="align-top">
+                  <TableCell className="align-top">
                     <div className="flex items-start">
                       <Checkbox
                         checked={
@@ -183,7 +109,7 @@ const KPIList = () => {
                         }}
                       />
                     </div>
-                  </TableCell> */}
+                  </TableCell>
                   <TableCell className="font-medium align-top">
                     <p className="flex items-start text-nowrap group-hover:underline underline-offset-1">
                       {eachReport.title}
@@ -208,7 +134,7 @@ const KPIList = () => {
           </Button>
           <Button
             onClick={() => router.push(`/reports/summary`)}
-            disabled={selectedList.length === 0}
+            // disabled={selectedList.length === 0}
             className="bg-blue-900 hover:bg-blue-800 w-full max-w-md"
           >
             Submit
@@ -219,4 +145,4 @@ const KPIList = () => {
   );
 };
 
-export default KPIList;
+export default Page;

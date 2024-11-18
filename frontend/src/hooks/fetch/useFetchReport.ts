@@ -14,11 +14,13 @@ export type FetchReports = {
     name: string;
     category: string;
     description: string;
+    id: string;
   }[];
   customReports: {
     name: string;
     category: string;
     description: string;
+    id: string;
   }[];
 };
 
@@ -54,6 +56,30 @@ export const useCreateReport = (props: GetReports) => {
       });
     },
   });
+};
+
+
+export const useCreateReportKpi = (props: GetReports) => {
+  const client = useQueryClient();
+  const refetch = JSON.stringify(props);
+  return useCustomMutation<CreateReports, createReportMutate, null>({
+    apiRoute: "/api/reports/addReport",
+    body: props,
+    onSuccess: () => {
+      client.invalidateQueries({
+        queryKey: ["report"],
+      });
+    },
+  });
+};
+export const useGetReportKpi = (props: { isCustom?: boolean; id: string }) => {
+  return useFetch<{ id: string; description: string; title: string }[]>(
+    `/api/reports/getReportKpis/${props.id}?isCustom=${props.isCustom}`
+  );
+};
+
+export const useGetLevels = () => {
+  return useFetch<{ name: string }[]>("/api/levels/getLevels");
 };
 
 // export const useDeleteReport = () => {

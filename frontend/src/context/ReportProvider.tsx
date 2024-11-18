@@ -5,7 +5,6 @@ type DataSourceType = {
   title: string;
   description: string;
   category?: string;
-  isCustom: boolean;
 };
 
 interface SelectedListContextType {

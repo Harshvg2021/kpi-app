@@ -387,8 +387,6 @@ const editCustomKPI = async (req, res) => {
   }
 };
 
-
-
 const getKpiFilterByReport = async (req, res) => {
   try {
     const {
@@ -397,12 +395,17 @@ const getKpiFilterByReport = async (req, res) => {
       distributionModel,
       subjectArea,
       reportId,
-      level, 
+      level,
     } = req.body;
 
-   
-    if (!therapyArea || !region || !distributionModel || !subjectArea || !reportId) {
-      return res.status(400).json({ error: 'Missing required fields.' });
+    if (
+      !therapyArea ||
+      !region ||
+      !distributionModel ||
+      !subjectArea ||
+      !reportId
+    ) {
+      return res.status(400).json({ error: "Missing required fields." });
     }
     const standardKPIs = await prisma.kpi.findMany({
       where: {
@@ -411,7 +414,7 @@ const getKpiFilterByReport = async (req, res) => {
         distributionModelName: distributionModel,
         subjectAreaName: subjectArea,
         reportId,
-        ...(level && { kpiLists: { some: { levelName: level } } }), 
+        ...(level && { kpiLists: { some: { levelName: level } } }),
       },
       select: {
         kpiLists: {
@@ -422,12 +425,12 @@ const getKpiFilterByReport = async (req, res) => {
             title: true,
           },
           where: {
-            levelName: level|| undefined, 
+            levelName: level || undefined,
           },
         },
       },
     });
-    console.log(standardKPIs)
+    console.log(standardKPIs);
     const customKPIs = await prisma.customKPI.findMany({
       where: {
         therapyAreaName: therapyArea,
@@ -446,7 +449,7 @@ const getKpiFilterByReport = async (req, res) => {
             title: true,
           },
           where: {
-            levelName: level|| undefined, 
+            levelName: level || undefined,
           },
         },
       },
@@ -454,19 +457,17 @@ const getKpiFilterByReport = async (req, res) => {
 
     const totalKPIs = standardKPIs.length + customKPIs.length;
 
-    const combinedKPIs = {"standardKpis" : standardKPIs , "customKpis" : customKPIs};
+    const combinedKPIs = { standardKpis: standardKPIs, customKpis: customKPIs };
 
     return res.status(200).json({
       totalKPIs,
       combinedKPIs,
     });
   } catch (error) {
-    console.error('Error fetching aggregated KPIs:', error);
-    return res.status(500).json({ error: 'Internal server error.' });
+    console.error("Error fetching aggregated KPIs:", error);
+    return res.status(500).json({ error: "Internal server error." });
   }
 };
-
-
 
 export {
   getKPIs,
@@ -480,5 +481,5 @@ export {
   editCustomKPI,
   addManyCustomKPI,
   getCategories,
-  getKpiFilterByReport
+  getKpiFilterByReport,
 };

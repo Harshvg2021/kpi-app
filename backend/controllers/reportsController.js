@@ -21,6 +21,7 @@ export const getReports = async (req, res) => {
         category: true,
         description: true,
         name: true,
+        id: true,
       },
     });
 
@@ -36,6 +37,7 @@ export const getReports = async (req, res) => {
         category: true,
         description: true,
         name: true,
+        id: true,
       },
     });
 
@@ -117,6 +119,50 @@ export const getReportsByCategory = async (req, res) => {
   }
 };
 
+export const getReportsKpis = async (req, res) => {
+  try {
+    const { isCustom } = req.query;
+    const kpis = await prisma.customKPIList.findMany({
+      where: {
+        OR: [
+          {
+            customReportId: {
+              has: req.params.id,
+            },
+          },
+          {
+            standardReportId: {
+              has: req.params.id,
+            },
+          },
+        ],
+        userId: req.user.userId,
+      },
+      select: {
+        title: true,
+        description: true,
+        levelName: true,
+        id: true,
+      },
+    });
+    if (!isCustom) {
+      const standardKpi = await prisma.kpiList.findMany({
+        where: {
+          standardReportId: req.params.id,
+        },
+        select: {
+          title: true,
+          description: true,
+          levelName: true,
+          id: true,
+        },
+      });
+      kpis.concat(standardKpi);
+    }
+    return res.status(200).json(kpis);
+  } catch (error) {}
+};
+
 export const addReport = async (req, res) => {
   try {
     const {
@@ -161,6 +207,49 @@ export const addReport = async (req, res) => {
   }
 };
 
+export const addReportKpi = async (req, res) => {
+  try {
+    const { reportId, title, description } = req.body;
+    const { isCustom } = req.query;
+
+    if (isCustom) {
+      const report = await prisma.customReport.findFirst({
+        where: {
+          id: reportId,
+          userId: req.user.userId,
+        },
+        select: {
+          therapyAreaName: true,
+          regionName: true,
+          distributionModelName: true,
+          subjectAreaName: true,
+        },
+      });
+      if (!report)
+        return res.status(404).json({ message: "report not found." });
+      const newKpi = await prisma.customKPI.findFirst({
+        where: {
+          therapyAreaName: report.therapyAreaName,
+          regionName: report.regionName,
+          distributionModelName: report.distributionModelName,
+          subjectAreaName: report.subjectAreaName,
+          userId: req.user.userId,
+          kpiLists: {
+            every: {
+              customReportId: {
+                has: reportId,
+              },
+            },
+          },
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error adding KPI:", error);
+    res.status(500).json({ message: "Error adding KPI", error: error.message });
+  }
+};
+
 export const addKpiWithReportFilter = async (req, res) => {
   const {
     regionName,
@@ -175,52 +264,52 @@ export const addKpiWithReportFilter = async (req, res) => {
 
   const userId = req.user.userId;
   try {
-      console.log("hel")
-      const kpis = await prisma.customKPI.findFirst({
-        where: {
-          therapyAreaName: therapyAreaName,
-          regionName: regionName,
-          distributionModelName: distributionModelName,
-          subjectAreaName: subjectAreaName,
-          userId :userId,
-          reportId: reportId,
-        },
-        select: {
-          id : true
+    console.log("hel");
+    const kpis = await prisma.customKPI.findFirst({
+      where: {
+        therapyAreaName: therapyAreaName,
+        regionName: regionName,
+        distributionModelName: distributionModelName,
+        subjectAreaName: subjectAreaName,
+        userId: userId,
+        reportId: reportId,
+      },
+      select: {
+        id: true,
+      },
+    });
+    console.log(kpis);
+
+    if (kpis?.id) {
+      await prisma.customKPIList.create({
+        data: {
+          userId,
+          title: kpi_name,
+          description: kpi_description,
+          customKpisId: kpis.id,
+          levelName: levelName,
         },
       });
-      console.log(kpis);
-      
-      if (kpis?.id) {
-        await prisma.customKPIList.create({
-          data: {
-            userId,
-            title: kpi_name,
-            description: kpi_description,
-            customKpisId: kpis.id,
-            levelName: levelName,
-          },
-        });
-      } else {
-        await prisma.customKPI.create({
-          data: {
-            regionName: regionName,
-            subjectAreaName: subjectAreaName,
-            therapyAreaName: therapyAreaName,
-            distributionModelName: distributionModelName,
-            userId,
-            reportId : reportId,
-            kpiLists: {
-              create: {
-                userId,
-                title: kpi_name,
-                description: kpi_description,
-                levelName :level
-              },
+    } else {
+      await prisma.customKPI.create({
+        data: {
+          regionName: regionName,
+          subjectAreaName: subjectAreaName,
+          therapyAreaName: therapyAreaName,
+          distributionModelName: distributionModelName,
+          userId,
+          reportId: reportId,
+          kpiLists: {
+            create: {
+              userId,
+              title: kpi_name,
+              description: kpi_description,
+              levelName: level,
             },
           },
-        });
-      }
+        },
+      });
+    }
 
     res.status(200).json({
       message: "added new KPI",
