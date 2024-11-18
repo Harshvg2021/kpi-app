@@ -218,35 +218,74 @@ export const addReportKpi = async (req, res) => {
           id: reportId,
           userId: req.user.userId,
         },
-        select: {
-          therapyAreaName: true,
-          regionName: true,
-          distributionModelName: true,
-          subjectAreaName: true,
+        include: {
+          CustomKPI: {
+            select: {
+              id: true,
+              regionName: true,
+              therapyAreaName: true,
+              distributionModelName: true,
+              subjectAreaName: true
+            }
+          }
+        }
+      });
+
+      if (!report) {
+        return res.status(500).json({
+          message: 'Custom report not found'
+        });
+      }
+
+      let customKpiId;
+      if (report.CustomKPI.length > 0) {
+        customKpiId = report.CustomKPI[0].id;
+      } else {
+        const newCustomKpi = await prisma.customKPI.create({
+          data: {
+            userId: req.user.userId,
+            therapyAreaName: report.therapyAreaName,
+            regionName: report.regionName,
+            distributionModelName: report.distributionModelName,
+            subjectAreaName: report.subjectAreaName,
+          }
+        });
+        customKpiId = newCustomKpi.id;
+      }
+
+      const customKpiList = await prisma.customKPIList.create({
+        data: {
+          title,
+          description,
+          categoryName: "Custom",
+          userId: req.user.userId,
+          customKpisId: customKpiId,
         },
       });
-      if (!report)
-        return res.status(404).json({ message: "report not found." });
-      const newKpi = await prisma.customKPI.findFirst({
+
+      await prisma.customReport.update({
         where: {
-          therapyAreaName: report.therapyAreaName,
-          regionName: report.regionName,
-          distributionModelName: report.distributionModelName,
-          subjectAreaName: report.subjectAreaName,
-          userId: req.user.userId,
-          kpiLists: {
-            every: {
-              customReportId: {
-                has: reportId,
-              },
-            },
+          id: reportId,
+        },
+        data: {
+          kpiListId: {
+            push: customKpiList.id,
           },
+        },
+      });
+
+      return res.status(201).json({
+        data: {
+          kpiList: customKpiList,
         },
       });
     }
   } catch (error) {
-    console.error("Error adding KPI:", error);
-    res.status(500).json({ message: "Error adding KPI", error: error.message });
+    console.error('Error in addReportKpi:', error);
+    return res.status(500).json({
+      message: 'Internal server error',
+      error: error.message,
+    });
   }
 };
 
