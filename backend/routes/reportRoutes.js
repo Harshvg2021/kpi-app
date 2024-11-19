@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addKpiWithReportFilter,
+  addReportKpi,
   addReport,
   getReports,
   getReportsByCategory,
@@ -15,5 +16,7 @@ router.post("/getReportsByCategory", authMiddleware, getReportsByCategory);
 router.get("/getReportKpis/:id", authMiddleware, getReportsKpis);
 router.post("/addReport", authMiddleware, addReport);
 router.post("/addKpiWithReportFilter", authMiddleware, addKpiWithReportFilter);
+router.post("/addReportKpi", authMiddleware, addReportKpi);
+
 
 export default router;
