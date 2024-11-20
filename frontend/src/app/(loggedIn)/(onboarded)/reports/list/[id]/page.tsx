@@ -19,14 +19,15 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { SkipBack } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useReportList } from "@/context/ReportProvider";
 import CreateReportKpi from "./components/CreateReportKpi";
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = () => {
   const search = useSearchParams();
+  const params = useParams<{id: string}>()
   const kpis = useGetReportKpi({
     id: params.id,
     isCustom: search.get("isCustom") == "true",
