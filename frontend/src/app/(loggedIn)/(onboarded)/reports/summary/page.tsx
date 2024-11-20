@@ -1,6 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Download, X, Share2 } from "lucide-react";
@@ -17,17 +24,38 @@ import {
   exportToPowerPoint,
 } from "@/lib/convertor/reportConvertor";
 import { useReportList } from "@/context/ReportProvider";
+import { useGetLevels } from "@/hooks/fetch/useFetchReport";
 
 const Page = () => {
   const router = useRouter();
   const { selectedList } = useReportList();
   const [isExporting, setIsExporting] = useState(false);
   const search = useSearchParams();
-  useEffect(() => {
-    if (selectedList.length === 0) {
-      router.push("/report/list");
-    }
-  }, [selectedList, router]);
+  const level = useGetLevels();
+  // useEffect(() => {
+  //   if (selectedList.length === 0) {
+  //     router.push("/reports/list");
+  //   }
+  // }, [selectedList, router]);
+
+  const data = useMemo(() => {
+    const map = new Map<string, string[]>();
+    selectedList.map((e, i) => {
+      if (!e.levelName) {
+        if (!map.get("All")) map.set("All", []);
+        map.set("All", [...(map.get("All") ?? []), e.title]);
+      } else {
+        if (!map.get(e.levelName)) map.set(e.levelName, []);
+        map.set(e.levelName, [...(map.get(e.levelName) ?? []), e.title]);
+      }
+    });
+    return map;
+  }, [selectedList]);
+
+  const headers = Array.from(data.keys());
+  const maxRows = Math.max(
+    ...Array.from(data.values()).map((rows) => rows.length)
+  );
 
   const handleExport = async (format: "excel" | "pdf" | "ppt") => {
     setIsExporting(true);
@@ -66,14 +94,26 @@ const Page = () => {
           </button>
         </div>
 
-        <Table className="grow h-full">
+        <Table className="grow h-full min-w-full ">
+          <TableHeader>
+            <TableRow>
+              {" "}
+              <TableHead className="text-center">Default</TableHead>
+              {level.data?.map((e) => (
+                <TableHead className="text-center" key={e.name}>
+                  {e.name}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
           <TableBody>
-            {selectedList.map((report, index) => (
-              <TableRow key={index} className="hover:bg-gray-50">
-                <TableCell className="font-medium w-32">{report.title}</TableCell>
-                <TableCell className="text-gray-600">
-                  {report.description}
-                </TableCell>
+            {Array.from({ length: maxRows }).map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {headers.map((header, colIndex) => (
+                  <TableCell key={colIndex} className="text-muted-foreground">
+                    {data.get(header)?.[rowIndex] || ""}
+                  </TableCell>
+                ))}
               </TableRow>
             ))}
           </TableBody>

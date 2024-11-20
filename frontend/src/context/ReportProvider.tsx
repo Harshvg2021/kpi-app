@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 type DataSourceType = { 
   title: string;
   description: string;
-  category?: string;
+  levelName?: string;
 };
 
 interface SelectedListContextType {

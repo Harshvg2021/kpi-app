@@ -9,10 +9,10 @@ export type FetchOptions = {
   retry?: number;
 };
 
-export function useFetch<T>(apiRoute: string, queryKey?: string) {
+export function useFetch<T>(apiRoute: string, queryKey?: string[]) {
   const { status } = useSession();
   const query = useQuery({
-    queryKey: [queryKey || apiRoute],
+    queryKey: [, ...queryKey || apiRoute],
     queryFn: async (): Promise<T> => {
       const response = await AxiosClient.axios.get(`${apiRoute}`, {
         headers: {

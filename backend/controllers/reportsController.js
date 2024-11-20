@@ -145,7 +145,7 @@ export const getReportsKpis = async (req, res) => {
         id: true,
       },
     });
-    console.log(kpis)
+    console.log(kpis);
     if (!isCustom) {
       const standardKpi = await prisma.kpiList.findMany({
         where: {
@@ -211,10 +211,11 @@ export const addReport = async (req, res) => {
 export const addReportKpi = async (req, res) => {
   try {
     const { reportId, title, description } = req.body;
-    let { isCustom } = req.query;
-
-    isCustom = (isCustom === 'true')
+    let { isCustom } = req.body;
+    console.log(isCustom);
+    isCustom = isCustom === "true" || true;
     let reportData;
+    console.log(isCustom);
 
     if (isCustom) {
       reportData = await prisma.customReport.findFirst({
@@ -245,7 +246,7 @@ export const addReportKpi = async (req, res) => {
 
     if (!reportData) {
       return res.status(404).json({
-        message: `${isCustom ? 'Custom' : 'Standard'} report not found`
+        message: `${isCustom ? "Custom" : "Standard"} report not found`,
       });
     }
 
@@ -313,12 +314,11 @@ export const addReportKpi = async (req, res) => {
         customKPIList,
       },
     });
-
   } catch (error) {
-    console.error('Error in addReportKpi:', error);
+    console.error("Error in addReportKpi:", error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error',
+      message: "Internal server error",
       error: error.message,
     });
   }
