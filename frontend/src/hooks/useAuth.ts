@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useAuthDispatch } from "./useSession";
 import { AuthActions } from "@/context/AuthProvider";
+import { useOnboarding } from "@/context/OnboardingProvider";
 
 interface LoginProps {
   email: string;
@@ -48,6 +49,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
+      await localStorage.setItem("onboarding", "");
       await AxiosClient.logout();
       authDispatch(AuthActions.logout());
       router.push("/");
