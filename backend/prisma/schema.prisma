@@ -68,7 +68,7 @@ model CustomKPIList {
   categoryName String    @default("Custom")
 
   level            Level?           @relation(fields: [levelName], references: [name])
-  levelName        String?
+  levelName        String?          @default("Level 1")
   customReport     CustomReport[]   @relation(fields: [customReportId], references: [id])
   customReportId   String[]         @db.ObjectId
   StandardReport   StandardReport[] @relation(fields: [standardReportId], references: [id])
