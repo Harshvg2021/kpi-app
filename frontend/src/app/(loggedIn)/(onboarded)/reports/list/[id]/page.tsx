@@ -19,21 +19,35 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { SkipBack } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import router from "next/router";
-import React, { useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useReportList } from "@/context/ReportProvider";
 import CreateReportKpi from "./components/CreateReportKpi";
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = () => {
   const search = useSearchParams();
+  const params = useParams<{id: string}>()
   const kpis = useGetReportKpi({
     id: params.id,
     isCustom: search.get("isCustom") == "true",
   });
+
+  const router = useRouter();
+  const [level, setLevel] = useState<string>("All");
+
+  const [parsedData, setParsedData] = useState(kpis.data ?? []);
+
   const { selectSubjectArea, addToList, selectedList, removeFromList } =
     useReportList();
+  useEffect(() => {
+    if (level == "All") setParsedData(kpis.data ?? []);
+    else {
+      setParsedData((e) =>
+        e.filter((e) => e.levelName?.toLowerCase() === level?.toLowerCase())
+      );
+    }
+  }, [level, kpis.data]);
   const [category, setCategory] = useState("");
   const levels = useGetLevels();
   return (
@@ -41,7 +55,7 @@ const Page = ({ params }: { params: { id: string } }) => {
       <div className="bg-white md:p-8 p-2 my-8 rounded-lg shadow-md max-w-4xl min-w-[80vw] flex flex-col min-h-[90vh]  gap-4 mx-auto max-h-[90vh]">
         <div className="flex md:justify-between flex-col md:flex-row items-center">
           <h1 className="text-2xl font-bold">Kpi list</h1>
-          <Select value={category} onValueChange={setCategory}>
+          <Select value={level} onValueChange={setLevel}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Level" />
             </SelectTrigger>
@@ -58,7 +72,10 @@ const Page = ({ params }: { params: { id: string } }) => {
           </Select>
           <div className="flex gap-2 items-center">
             {/* <UploadKpi /> */}
-            <CreateReportKpi />
+            <CreateReportKpi
+              isCustom={search.get("isCustom") == "true"}
+              reportId={params.id}
+            />
           </div>
         </div>
 
@@ -87,7 +104,7 @@ const Page = ({ params }: { params: { id: string } }) => {
                   </TableCell>
                 </TableRow>
               )}
-              {kpis.data?.toReversed().map((eachReport, index) => (
+              {parsedData?.toReversed().map((eachReport, index) => (
                 <TableRow
                   key={index}
                   className="align-top group cursor-pointer even:bg-blue-50"
@@ -126,7 +143,7 @@ const Page = ({ params }: { params: { id: string } }) => {
 
         <div className="flex justify-center gap-4">
           <Button
-            onClick={() => router.push(`/reports/subject`)}
+            onClick={() => router.push(`/reports/list`)}
             icon={<SkipBack size={12} />}
             className="bg-blue-900 hover:bg-blue-800 "
           >

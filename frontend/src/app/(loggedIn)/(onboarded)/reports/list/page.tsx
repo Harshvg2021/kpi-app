@@ -162,7 +162,7 @@ const KPIList = () => {
                   className="align-top group cursor-pointer even:bg-blue-50"
                   onClick={() =>
                     router.push(
-                      `/reports/list/${eachReport.id}?custom=${eachReport.isCustom}`
+                      `/reports/list/${eachReport.id}?isCustom=${eachReport.isCustom}`
                     )
                   }
                 >

@@ -16,78 +16,55 @@ import { LogOut, RefreshCcw, Undo } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const LinkGenerate = ({ href, text }: { href?: string; text: string }) => {
+const LinkGenerate = ({
+  href,
+  text,
+  img,
+}: {
+  href?: string;
+  text: string;
+  img: string;
+}) => {
   return (
     <Link
       href={href ?? "/kpi/subject"}
-      className="hover:text-blue-100 relative col-span-4 h-[200px] grid place-content-center overflow-hidden shadow-xl shadow-blue-300  bg-blue-600 text-white py-2 px-2 rounded-md"
+      className="hover:text-blue-100 relative col-span-4 h-[200px]  aspect-[9/10] mx-auto flex justify-between flex-col overflow-hidden shadow-lg  bg-blue-600 text-white pt-2  rounded-md"
     >
-      <Image
-        src={"/pattern.svg"}
-        height={600}
-        width={1000}
-        alt=""
-        className="absolute mix-blend-overlay opacity-20"
-      />
-      <CardTitle className="z-20">{text}</CardTitle>
+      <div className="mx-auto">
+        <Image
+          src={img}
+          alt="data"
+          width={200}
+          height={200}
+          className="w-20 h-32  object-contain"
+        />
+      </div>
+      <CardTitle className="text-center text-black h-20 grid place-content-center bg-white">
+        {text}
+      </CardTitle>
     </Link>
   );
 };
 
 const Page = () => {
-  const { logout } = useAuth();
-  const { selectedOnboarding, clearOnboarding } = useOnboarding();
   return (
-    <Card className="w-full max-w-[90vw] min-h-[80vh]">
-      <CardHeader>
-        <CardTitle>Please select data type.</CardTitle>
-        <CardDescription>
-          You can use different data types that suits your needs.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="  gap-8 grid md:grid-cols-12  grid-cols-4">
-        <LinkGenerate text="Data" href="/data-source/subject" />
-        <LinkGenerate text="KPI" href="/kpi/subject" />
-        <LinkGenerate text="Use cases" href="/use-cases/subject" />
-        <LinkGenerate text="Reports" href="/reports/subject" />
-        <LinkGenerate text="Activities" />
-        <LinkGenerate text="Systems" />
+    <Card className="min-h-[400px] border w-[1000px] shadow-md max-w-[97vw]">
+      <CardContent className="  gap-8 md:gap-9 p-8 grid md:grid-cols-12 w-fit mx-auto grid-cols-4 sm:grid-cols-8">
+        <LinkGenerate img="/data.png" text="Data" href="/data-source/subject" />
+        <LinkGenerate img="/kpi.png" text="KPI" href="/kpi/subject" />
+        <LinkGenerate
+          img="/usecase.png"
+          text="Use cases"
+          href="/use-cases/subject"
+        />
+        <LinkGenerate
+          img="/reports.png"
+          text="Reports"
+          href="/reports/subject"
+        />
+        <LinkGenerate img="/activities.png" text="Activities" />
+        <LinkGenerate img="/systems.png" text="Systems" />
       </CardContent>
-      <CardFooter className="flex  gap-4 justify-between flex-wrap">
-        <div className="flex  gap-4 flex-wrap">
-          <Button
-            size={"sm"}
-            variant={"outline"}
-            className="shadow-md"
-            onClick={clearOnboarding}
-            icon={<RefreshCcw />}
-          >
-            Reset
-          </Button>
-          <div className="flex flex-col font-semibold gap-1">
-            <span className="">Therapy Area</span>
-            <Badge> {selectedOnboarding?.therapyArea}</Badge>
-          </div>
-          <div>
-            <span className="flex flex-col font-semibold gap-1">Region </span>
-            <Badge> {selectedOnboarding?.region}</Badge>
-          </div>
-          <div>
-            <span className="flex flex-col font-semibold gap-1">
-              Distribution
-            </span>
-            <Badge> {selectedOnboarding?.distributionModel}</Badge>
-          </div>
-        </div>
-        <Button
-          variant={"destructive"}
-          onClick={() => logout()}
-          icon={<LogOut />}
-          size={"sm"}
-        >
-          Logout
-        </Button>
-      </CardFooter>
     </Card>
   );
 };

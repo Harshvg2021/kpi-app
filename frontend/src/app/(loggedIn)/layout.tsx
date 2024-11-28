@@ -1,11 +1,10 @@
 "use client";
 import { Spinner } from "@/components/custom/Spinner";
-import {
-  OnboardingProvider,
-} from "@/context/OnboardingProvider";
+import { OnboardingProvider } from "@/context/OnboardingProvider";
 import { useSession } from "@/hooks/useSession";
 import { usePathname, useRouter } from "next/navigation";
 import React, { ReactNode, useEffect } from "react";
+import LoggedInNav from "./components/LoggedInNav";
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const { status } = useSession();
@@ -26,9 +25,11 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <OnboardingProvider>
-      <div className="min-h-screen gap-4 flex items-center justify-center bg-[radial-gradient(58.43%_103.88%_at_56.74%_50%,#0085FF_0%,#003465_100%)]">
-        {children}
-      </div>
+      <LoggedInNav>
+        <div className=" gap-4 md:mt-18 mt-10 flex items-center justify-center bg-white">
+          {children}
+        </div>
+      </LoggedInNav>
     </OnboardingProvider>
   );
 };

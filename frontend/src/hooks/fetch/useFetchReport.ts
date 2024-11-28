@@ -51,30 +51,38 @@ export const useCreateReport = (props: GetReports) => {
     apiRoute: "/api/reports/addReport",
     body: props,
     onSuccess: () => {
-      client.invalidateQueries({
+      client.refetchQueries({
         queryKey: ["report"],
       });
     },
   });
 };
 
+type CreateReportKpi = {
+  isCustom: boolean;
+  reportId: string;
+  title: string;
+  description: string;
+};
 
-export const useCreateReportKpi = (props: GetReports) => {
+export const useCreateReportKpi = () => {
   const client = useQueryClient();
-  const refetch = JSON.stringify(props);
-  return useCustomMutation<CreateReports, createReportMutate, null>({
-    apiRoute: "/api/reports/addReport",
-    body: props,
+  return useCustomMutation<null, CreateReportKpi, null>({
+    apiRoute: "/api/reports/addReportKpi",
+    method: "POST",
     onSuccess: () => {
-      client.invalidateQueries({
+      client.refetchQueries({
         queryKey: ["report"],
       });
     },
   });
 };
 export const useGetReportKpi = (props: { isCustom?: boolean; id: string }) => {
-  return useFetch<{ id: string; description: string; title: string }[]>(
-    `/api/reports/getReportKpis/${props.id}?isCustom=${props.isCustom}`
+  return useFetch<
+    { id: string; description: string; title: string; levelName: string }[]
+  >(
+    `/api/reports/getReportKpis/${props.id}?isCustom=${props.isCustom}`,
+    ["reports", props.id]
   );
 };
 

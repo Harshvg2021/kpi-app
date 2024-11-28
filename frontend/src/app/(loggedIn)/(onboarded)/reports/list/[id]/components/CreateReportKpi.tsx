@@ -15,22 +15,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useOnboarding } from "@/context/OnboardingProvider";
 import { useReportList } from "@/context/ReportProvider";
-import { useCreateReport } from "@/hooks/fetch/useFetchReport";
+import {
+  useCreateReport,
+  useCreateReportKpi,
+} from "@/hooks/fetch/useFetchReport";
 import { useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-const CreateReportKpi = () => {
+const CreateReportKpi = (props: { reportId: string; isCustom: boolean }) => {
   const search = useSearchParams();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { options } = useReportList();
   const { selectedOnboarding } = useOnboarding();
-  const createReport = useCreateReport({
-    distributionModelName: selectedOnboarding?.distributionModel,
-    regionName: selectedOnboarding?.region,
-    subjectAreaName: options?.subjectArea,
-    therapyAreaName: selectedOnboarding?.therapyArea,
-  });
+  const createReport = useCreateReportKpi();
+
   const [title, setTitle] = React.useState("");
   const [description, setDescription] = React.useState("");
   return (
@@ -41,7 +40,7 @@ const CreateReportKpi = () => {
           variant={"default"}
           className="bg-blue-500 hover:bg-blue-600"
         >
-          Add New report
+          Add New kpi
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -89,7 +88,9 @@ const CreateReportKpi = () => {
               await createReport.mutateAsync({
                 mutationBody: {
                   description: description,
-                  name: title,
+                  title: title,
+                  isCustom: props.isCustom,
+                  reportId: props.reportId,
                 },
               });
               setTitle("");
