@@ -1,7 +1,7 @@
 import { useLocalStorage } from "@/hooks/usePersistenceStorage";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
-type DataSourceType = { 
+type DataSourceType = {
   title: string;
   description: string;
   levelName?: string;

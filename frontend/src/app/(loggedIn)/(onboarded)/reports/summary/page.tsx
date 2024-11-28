@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -40,10 +40,10 @@ const Page = () => {
 
   const data = useMemo(() => {
     const map = new Map<string, string[]>();
-    selectedList.map((e, i) => {
+    selectedList.forEach((e, i) => {
       if (!e.levelName) {
-        if (!map.get("All")) map.set("All", []);
-        map.set("All", [...(map.get("All") ?? []), e.title]);
+        if (!map.get("Level 1")) map.set("Level 1", []);
+        map.set("Level 1", [...(map.get("Level 1") ?? []), e.title]);
       } else {
         if (!map.get(e.levelName)) map.set(e.levelName, []);
         map.set(e.levelName, [...(map.get(e.levelName) ?? []), e.title]);
@@ -53,6 +53,7 @@ const Page = () => {
   }, [selectedList]);
 
   const headers = Array.from(data.keys());
+  console.log(headers);
   const maxRows = Math.max(
     ...Array.from(data.values()).map((rows) => rows.length)
   );
@@ -96,11 +97,12 @@ const Page = () => {
 
         <Table className="grow h-full min-w-full ">
           <TableHeader>
-            <TableRow>
-              {" "}
-              <TableHead className="text-center">Default</TableHead>
+            <TableRow className="space-y-2">
               {level.data?.map((e) => (
-                <TableHead className="text-center" key={e.name}>
+                <TableHead
+                  className="text-center bg-blue-500 text-white"
+                  key={e.name}
+                >
                   {e.name}
                 </TableHead>
               ))}
@@ -109,9 +111,12 @@ const Page = () => {
           <TableBody>
             {Array.from({ length: maxRows }).map((_, rowIndex) => (
               <TableRow key={rowIndex}>
-                {headers.map((header, colIndex) => (
-                  <TableCell key={colIndex} className="text-muted-foreground">
-                    {data.get(header)?.[rowIndex] || ""}
+                {level.data?.map((header, colIndex) => (
+                  <TableCell
+                    key={colIndex}
+                    className="text-muted-foreground text-center"
+                  >
+                    {data.get(header.name)?.[rowIndex] || ""}
                   </TableCell>
                 ))}
               </TableRow>
