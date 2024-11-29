@@ -143,6 +143,7 @@ export const getReportsKpis = async (req, res) => {
         description: true,
         levelName: true,
         id: true,
+        figmaUrl: true,
       },
     });
     console.log(kpis);

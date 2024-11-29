@@ -51,9 +51,10 @@ model CustomKPI {
 }
 
 model CustomKPIList {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
+  figmaUrl    String?
 
   customKpis   CustomKPI @relation(fields: [customKpisId], references: [id])
   customKpisId String    @db.ObjectId
@@ -102,11 +103,12 @@ model Kpi {
 }
 
 model KpiList {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
-  Kpi         Kpi    @relation(fields: [kpiId], references: [id])
-  kpiId       String @db.ObjectId
+  Kpi         Kpi     @relation(fields: [kpiId], references: [id])
+  kpiId       String  @db.ObjectId
+  figmaUrl    String?
 
   category     Category @relation(fields: [categoryName], references: [name])
   categoryName String
